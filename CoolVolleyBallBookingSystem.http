@@ -1,0 +1,6 @@
+@CoolVolleyBallBookingSystem_HostAddress = http://localhost:5272
+
+GET {{CoolVolleyBallBookingSystem_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
