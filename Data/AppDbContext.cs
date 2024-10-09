@@ -37,8 +37,8 @@ namespace CoolVolleyBallBookingSystem.Data
             modelBuilder.Entity<Tournament>()
                 .HasOne(t => t.Organizer)
                 .WithMany(u => u.Tournaments)
-                .HasForeignKey(t => t.OrganizerID)
-                .OnDelete(DeleteBehavior.SetNull);
+                .HasForeignKey(t => t.OrganizerID).OnDelete(DeleteBehavior.SetNull);
+
         }
     }
 
