@@ -1,12 +1,13 @@
 ﻿using CoolVolleyBallBookingSystem.Data;
 using CoolVolleyBallBookingSystem.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace CoolVolleyBallBookingSystem.Controllers
 {
-
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class UserController : Controller
@@ -45,13 +46,13 @@ namespace CoolVolleyBallBookingSystem.Controllers
         {
             _dbContext.Users.Add(user);
             await _dbContext.SaveChangesAsync();
-            return CreatedAtAction(nameof(GetUserById), new { id = user.UserID }, user);
+            return CreatedAtAction(nameof(GetUserById), new { id = user.Id }, user);
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateUser(int id, [FromBody] User updatedUser)
+        public async Task<IActionResult> UpdateUser(string id, [FromBody] User updatedUser)
         {
-            if (id != updatedUser.UserID)
+            if (id != updatedUser.Id)
             {
                 return BadRequest("User ID mismatch");
             }
@@ -63,7 +64,7 @@ namespace CoolVolleyBallBookingSystem.Controllers
             }
 
 
-            user.Username = updatedUser.Username;
+            //user.Username = updatedUser.Username;
             user.Email = updatedUser.Email;
             user.PasswordHash = updatedUser.PasswordHash;
             user.Role = updatedUser.Role;
@@ -75,7 +76,7 @@ namespace CoolVolleyBallBookingSystem.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!_dbContext.Users.Any(u => u.UserID == id))
+                if (!_dbContext.Users.Any(u => u.Id == id))
                 {
                     return NotFound();
                 }

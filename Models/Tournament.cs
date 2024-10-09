@@ -4,7 +4,7 @@
     {
         public int TournamentID { get; set; }
         public string TournamentName { get; set; }
-        public int? OrganizerID { get; set; }
+        public string? OrganizerID { get; set; }
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
         public string Location { get; set; }

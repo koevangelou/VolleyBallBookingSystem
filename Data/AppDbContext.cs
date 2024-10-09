@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
-//using Microsoft.AspNetCore.Identity.EntityFrameworkCore; 
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore; 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Cryptography.X509Certificates;
@@ -7,11 +7,11 @@ using CoolVolleyBallBookingSystem.Models;
 
 namespace CoolVolleyBallBookingSystem.Data
 {
-    public class AppDbContext : DbContext
+    public class AppDbContext : IdentityDbContext<User>
     {
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
         { }
-        public DbSet<User> Users { get; set; }
+        //public DbSet<User> Users { get; set; }
         public DbSet<Court> Courts { get; set; }
 
         public DbSet<Booking> Bookings { get; set; }

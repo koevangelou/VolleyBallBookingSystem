@@ -3,7 +3,7 @@
     public class Booking
     {
         public int BookingID { get; set; }
-        public int UserID { get; set; }
+        public string UserID { get; set; }
         public int CourtID { get; set; }
         public DateTime BookingDate { get; set; }
         public TimeSpan StartTime { get; set; }
