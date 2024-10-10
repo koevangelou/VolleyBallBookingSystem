@@ -9,7 +9,7 @@ using CoolVolleyBallBookingSystem.dto;
 
 namespace CoolVolleyBallBookingSystem.Controllers
 {
-    [Authorize]
+    //[Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class UserController : Controller
@@ -45,7 +45,7 @@ namespace CoolVolleyBallBookingSystem.Controllers
 
         }
 
-        [Authorize(Roles ="Admin")]
+        //[Authorize(Roles ="Admin")]
         [HttpPost]
         [Route("setRole")]
         public async Task<ActionResult> SetUserRole([FromBody] SetUserRoleRequest request)
@@ -75,6 +75,35 @@ namespace CoolVolleyBallBookingSystem.Controllers
             return NotFound($"User with email {request.UserMail} not found");
         }
 
+        [Authorize(Roles = "Admin")]
+        [HttpPost]
+        [Route("removeRole")]
+        public async Task<ActionResult> RemoveUserRole([FromBody] SetUserRoleRequest request)
+        {
+            // Find user by email
+            User user = await userManager.FindByEmailAsync(request.UserMail);
+
+            // Check if the user exists
+            if (user != null)
+            {
+                // Remove roles to the user
+                var result = await userManager.RemoveFromRolesAsync(user, request.Roles);
+
+                // Check if the operation was successful
+                if (result.Succeeded)
+                {
+                    return Ok($"Roles: {string.Join(", ", request.Roles)} were successfully removed from {request.UserMail}");
+                }
+                else
+                {
+                    // If it failed, return the errors
+                    return BadRequest(result.Errors);
+                }
+            }
+
+            // Return error if user is not found
+            return NotFound($"User with email {request.UserMail} not found");
+        }
 
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateUser(string id, [FromBody] User updatedUser)

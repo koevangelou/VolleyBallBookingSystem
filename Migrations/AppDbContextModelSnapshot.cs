@@ -248,22 +248,22 @@ namespace CoolVolleyBallBookingSystem.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "e85b2e6b-619e-4371-92f5-8ac4634b07c0",
-                            ConcurrencyStamp = "e85b2e6b-619e-4371-92f5-8ac4634b07c0",
+                            Id = "7b4d1f73-8942-4f37-bfc9-ca688028095e",
+                            ConcurrencyStamp = "7b4d1f73-8942-4f37-bfc9-ca688028095e",
                             Name = "Player",
                             NormalizedName = "PLAYER"
                         },
                         new
                         {
-                            Id = "896a5e48-78ed-43eb-9282-2d167e624c17",
-                            ConcurrencyStamp = "896a5e48-78ed-43eb-9282-2d167e624c17",
+                            Id = "e5d67398-908c-431f-b9e2-4aee846cddf4",
+                            ConcurrencyStamp = "e5d67398-908c-431f-b9e2-4aee846cddf4",
                             Name = "Coach",
                             NormalizedName = "COACH"
                         },
                         new
                         {
-                            Id = "0de0795a-434a-4707-b51f-423372cb8ec5",
-                            ConcurrencyStamp = "0de0795a-434a-4707-b51f-423372cb8ec5",
+                            Id = "a8680c69-3e2d-42d4-9f3a-f1065db39dd8",
+                            ConcurrencyStamp = "a8680c69-3e2d-42d4-9f3a-f1065db39dd8",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         });
