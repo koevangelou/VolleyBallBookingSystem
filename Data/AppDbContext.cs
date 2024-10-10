@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore; 
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore;
 using System.Security.Cryptography.X509Certificates;
 using CoolVolleyBallBookingSystem.Models;
 
@@ -12,7 +11,7 @@ namespace CoolVolleyBallBookingSystem.Data
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
         { }
         //public DbSet<User> Users { get; set; }
-        public DbSet<Court> Courts { get; set; }
+        public DbSet<Court> Courts { get; set; }    
 
         public DbSet<Booking> Bookings { get; set; }
 
@@ -39,10 +38,39 @@ namespace CoolVolleyBallBookingSystem.Data
                 .WithMany(u => u.Tournaments)
                 .HasForeignKey(t => t.OrganizerID).OnDelete(DeleteBehavior.SetNull);
 
-        }
-    }
+            var readerRoleId = Guid.NewGuid().ToString();
+            var writerRoleId = Guid.NewGuid().ToString();
+            var adminRoleId = Guid.NewGuid().ToString();
 
-    
+            var roles = new List<IdentityRole>
+            {
+                new IdentityRole
+                {
+                    Id = readerRoleId,
+                    ConcurrencyStamp = readerRoleId,
+                    Name = "Player",
+                    NormalizedName = "Player".ToUpper()
+                },
+                new IdentityRole
+                {
+                    Id = writerRoleId,
+                    ConcurrencyStamp = writerRoleId,
+                    Name = "Coach",
+                    NormalizedName = "Coach".ToUpper()
+                },
+                new IdentityRole
+                {
+                    Id = adminRoleId,
+                    ConcurrencyStamp = adminRoleId,
+                    Name = "Admin",
+                    NormalizedName = "Admin".ToUpper()
+                }
+            };
+
+            modelBuilder.Entity<IdentityRole>().HasData(roles);
+        }
+
+    }
 }
 
 

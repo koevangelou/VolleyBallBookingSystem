@@ -3,10 +3,12 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
+#pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
+
 namespace CoolVolleyBallBookingSystem.Migrations
 {
     /// <inheritdoc />
-    public partial class addingIdentityUser : Migration
+    public partial class AddedRoles : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -235,6 +237,16 @@ namespace CoolVolleyBallBookingSystem.Migrations
                         principalTable: "Courts",
                         principalColumn: "CourtID",
                         onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.InsertData(
+                table: "AspNetRoles",
+                columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
+                values: new object[,]
+                {
+                    { "10f26fe3-e025-49a9-8a7f-dcc25bd46d09", "10f26fe3-e025-49a9-8a7f-dcc25bd46d09", "Player", "PLAYER" },
+                    { "20e6bd30-eede-40d5-963a-304a551076ac", "20e6bd30-eede-40d5-963a-304a551076ac", "Admin", "ADMIN" },
+                    { "aba734ce-2508-44a1-8c3c-4bbffb0986bb", "aba734ce-2508-44a1-8c3c-4bbffb0986bb", "Coach", "COACH" }
                 });
 
             migrationBuilder.CreateIndex(

@@ -2,21 +2,26 @@
 using CoolVolleyBallBookingSystem.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using CoolVolleyBallBookingSystem.dto;
 
 namespace CoolVolleyBallBookingSystem.Controllers
 {
-    [Authorize]
+    //[Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class UserController : Controller
     {
 
         private readonly AppDbContext _dbContext;
-        public UserController(AppDbContext dbContext)
+        private readonly UserManager<User> userManager;
+
+        public UserController(AppDbContext dbContext, UserManager<User> userManager)
         {
             _dbContext = dbContext;
+            this.userManager = userManager;
 
         }
 
@@ -40,14 +45,36 @@ namespace CoolVolleyBallBookingSystem.Controllers
 
         }
 
-
+        //[Authorize(Roles ="ADMIN")]
         [HttpPost]
-        public async Task<ActionResult> CreateUser(User user)
+        [Route("setRole")]
+        public async Task<ActionResult> SetUserRole([FromBody] SetUserRoleRequest request)
         {
-            _dbContext.Users.Add(user);
-            await _dbContext.SaveChangesAsync();
-            return CreatedAtAction(nameof(GetUserById), new { id = user.Id }, user);
+            // Find user by email
+            User user = await userManager.FindByEmailAsync(request.UserMail);
+
+            // Check if the user exists
+            if (user != null)
+            {
+                // Add roles to the user
+                var result = await userManager.AddToRolesAsync(user, request.Roles);
+
+                // Check if the operation was successful
+                if (result.Succeeded)
+                {
+                    return Ok($"Roles: {string.Join(", ", request.Roles)} were successfully added to {request.UserMail}");
+                }
+                else
+                {
+                    // If it failed, return the errors
+                    return BadRequest(result.Errors);
+                }
+            }
+
+            // Return error if user is not found
+            return NotFound($"User with email {request.UserMail} not found");
         }
+
 
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateUser(string id, [FromBody] User updatedUser)
@@ -67,7 +94,6 @@ namespace CoolVolleyBallBookingSystem.Controllers
             //user.Username = updatedUser.Username;
             user.Email = updatedUser.Email;
             user.PasswordHash = updatedUser.PasswordHash;
-            user.Role = updatedUser.Role;
             user.UpdatedAt = DateTime.UtcNow;
 
             try

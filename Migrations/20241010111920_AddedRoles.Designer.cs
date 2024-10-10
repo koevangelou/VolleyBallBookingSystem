@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CoolVolleyBallBookingSystem.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20241009144025_addingIdentityUser")]
-    partial class addingIdentityUser
+    [Migration("20241010111920_AddedRoles")]
+    partial class AddedRoles
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -251,6 +251,29 @@ namespace CoolVolleyBallBookingSystem.Migrations
                         .HasFilter("[NormalizedName] IS NOT NULL");
 
                     b.ToTable("AspNetRoles", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = "10f26fe3-e025-49a9-8a7f-dcc25bd46d09",
+                            ConcurrencyStamp = "10f26fe3-e025-49a9-8a7f-dcc25bd46d09",
+                            Name = "Player",
+                            NormalizedName = "PLAYER"
+                        },
+                        new
+                        {
+                            Id = "aba734ce-2508-44a1-8c3c-4bbffb0986bb",
+                            ConcurrencyStamp = "aba734ce-2508-44a1-8c3c-4bbffb0986bb",
+                            Name = "Coach",
+                            NormalizedName = "COACH"
+                        },
+                        new
+                        {
+                            Id = "20e6bd30-eede-40d5-963a-304a551076ac",
+                            ConcurrencyStamp = "20e6bd30-eede-40d5-963a-304a551076ac",
+                            Name = "Admin",
+                            NormalizedName = "ADMIN"
+                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
