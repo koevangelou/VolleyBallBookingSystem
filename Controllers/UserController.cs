@@ -9,7 +9,7 @@ using CoolVolleyBallBookingSystem.dto;
 
 namespace CoolVolleyBallBookingSystem.Controllers
 {
-    //[Authorize]
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class UserController : Controller
@@ -45,7 +45,7 @@ namespace CoolVolleyBallBookingSystem.Controllers
 
         }
 
-        //[Authorize(Roles ="ADMIN")]
+        [Authorize(Roles ="Admin")]
         [HttpPost]
         [Route("setRole")]
         public async Task<ActionResult> SetUserRole([FromBody] SetUserRoleRequest request)
