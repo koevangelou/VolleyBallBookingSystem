@@ -52,6 +52,7 @@ namespace CoolVolleyBallBookingSystem.Controllers
         {
             // Find user by email
             User user = await userManager.FindByEmailAsync(request.UserMail);
+            
 
             // Check if the user exists
             if (user != null)
@@ -82,7 +83,7 @@ namespace CoolVolleyBallBookingSystem.Controllers
         {
             // Find user by email
             User user = await userManager.FindByEmailAsync(request.UserMail);
-
+            
             // Check if the user exists
             if (user != null)
             {
