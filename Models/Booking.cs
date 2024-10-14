@@ -1,4 +1,6 @@
-﻿namespace CoolVolleyBallBookingSystem.Models
+﻿using System.Text.Json.Serialization;
+
+namespace CoolVolleyBallBookingSystem.Models
 {
     public class Booking
     {
@@ -11,7 +13,7 @@
         public string Status { get; set; } = "Booked";
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
-
+        [JsonIgnore]
         public User User { get; set; }
         public Court Court { get; set; }
 
