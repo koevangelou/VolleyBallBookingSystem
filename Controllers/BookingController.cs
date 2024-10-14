@@ -1,41 +1,13 @@
 ﻿using CoolVolleyBallBookingSystem.Data;
-<<<<<<< HEAD
-using CoolVolleyBallBookingSystem.Models;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using System.Threading.Tasks;
-=======
 using CoolVolleyBallBookingSystem.dto;
 using CoolVolleyBallBookingSystem.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
->>>>>>> feature/BookingController
 
 namespace CoolVolleyBallBookingSystem.Controllers
 {
     [Route("api/[controller]")]
-<<<<<<< HEAD
-    public class BookingController : Controller
-    {
-        private readonly AppDbContext _dbContext;
-
-        public BookingController(AppDbContext dbContext)
-        {
-            _dbContext = dbContext;
-        }
-
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetBookingById(int id)
-        {
-            var booking = await _dbContext.Bookings.FindAsync(id);
-            if (booking == null)
-            {
-                return NotFound();
-            }
-
-            return Ok(booking);
-=======
     [ApiController]
     public class BookingController : Controller
     {
@@ -45,9 +17,6 @@ namespace CoolVolleyBallBookingSystem.Controllers
         public BookingController(AppDbContext dbContext,UserManager<User> userManager) {
             _dbContext = dbContext;
             _userManager = userManager;
-
-
->>>>>>> feature/BookingController
         }
 
         [HttpGet]
@@ -91,13 +60,7 @@ namespace CoolVolleyBallBookingSystem.Controllers
                 UserID=requestDto.UserID,
                 BookingDate=requestDto.BookingDate,
                 StartTime =requestDto.StartTime,
-                EndTime =requestDto.EndTime,
-
-
-
-
-
-                
+                EndTime =requestDto.EndTime
             };
             try
             {
@@ -110,12 +73,6 @@ namespace CoolVolleyBallBookingSystem.Controllers
             {
                 return BadRequest(e.Message);
             }
-                
-            
-
         }
-        
-
-
     }
 }

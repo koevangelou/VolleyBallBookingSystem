@@ -47,7 +47,7 @@ namespace CoolVolleyBallBookingSystem.Controllers
             {
                 CourtName = courtDto.CourtName,
                 Location = courtDto.Location,
-                CourtType = courtDto.CourtType ?? "Sand"
+                CourtType = courtDto.CourtType ?? "GRASISI"
             };
 
             // Add the new court to the database
