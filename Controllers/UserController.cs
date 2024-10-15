@@ -17,11 +17,13 @@ namespace CoolVolleyBallBookingSystem.Controllers
 
         private readonly AppDbContext _dbContext;
         private readonly UserManager<User> userManager;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public UserController(AppDbContext dbContext, UserManager<User> userManager)
+        public UserController(AppDbContext dbContext, UserManager<User> userManager,IHttpContextAccessor httpContextAccessor)
         {
             _dbContext = dbContext;
             this.userManager = userManager;
+            _httpContextAccessor = httpContextAccessor;
 
         }
 
@@ -31,7 +33,15 @@ namespace CoolVolleyBallBookingSystem.Controllers
             return await _dbContext.Users.ToListAsync();
 
         }
+        [HttpGet]
+        [Route("GetCurrentUserProfile")]
+        public async Task<ActionResult> GetCurrentUserProfile()
+        {
+            User user = await userManager.GetUserAsync(_httpContextAccessor.HttpContext.User);
+            return Ok(user);
+        }
 
+        [Authorize(Roles ="Admin")]
         [HttpGet("{id}")]
         public async Task<IActionResult> GetUserById(int id)
         {
@@ -44,6 +54,7 @@ namespace CoolVolleyBallBookingSystem.Controllers
             return Ok(user);
 
         }
+        
 
         //[Authorize(Roles ="Admin")]
         [HttpPost]
@@ -52,6 +63,7 @@ namespace CoolVolleyBallBookingSystem.Controllers
         {
             // Find user by email
             User user = await userManager.FindByEmailAsync(request.UserMail);
+            
             
 
             // Check if the user exists
