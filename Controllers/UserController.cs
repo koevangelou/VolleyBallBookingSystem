@@ -190,9 +190,14 @@ namespace CoolVolleyBallBookingSystem.Controllers
             {
                 user.Email = changeProfileDto.email;
             }
-            var result = await userManager.UpdateAsync(user);
-            return Ok("Profile updated successfully");
-
+            try
+            {
+                var result = await userManager.UpdateAsync(user);
+                return Ok("Profile updated successfully");
+            }
+            catch (Exception ex) {
+                return BadRequest("There was an error with profile change"+ex.Message);
+            }
 
         }
 
