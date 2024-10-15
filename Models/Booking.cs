@@ -15,6 +15,7 @@ namespace CoolVolleyBallBookingSystem.Models
         public DateTime UpdatedAt { get; set; }
         [JsonIgnore]
         public User User { get; set; }
+        [JsonIgnore]
         public Court Court { get; set; }
 
     }
