@@ -19,7 +19,7 @@ namespace CoolVolleyBallBookingSystem.Controllers
         private readonly UserManager<User> userManager;
         private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public UserController(AppDbContext dbContext, UserManager<User> userManager,IHttpContextAccessor httpContextAccessor)
+        public UserController(AppDbContext dbContext, UserManager<User> userManager, IHttpContextAccessor httpContextAccessor)
         {
             _dbContext = dbContext;
             this.userManager = userManager;
@@ -43,7 +43,7 @@ namespace CoolVolleyBallBookingSystem.Controllers
             return Ok(user);
         }
 
-        [Authorize(Roles ="Admin")]
+        [Authorize(Roles = "Admin")]
         [HttpGet("{id}")]
         public async Task<IActionResult> GetUserById(int id)
         {
@@ -56,7 +56,7 @@ namespace CoolVolleyBallBookingSystem.Controllers
             return Ok(user);
 
         }
-        
+
 
         //[Authorize(Roles ="Admin")]
         [HttpPost]
@@ -65,8 +65,8 @@ namespace CoolVolleyBallBookingSystem.Controllers
         {
             // Find user by email
             User user = await userManager.FindByEmailAsync(request.UserMail);
-            
-            
+
+
 
             // Check if the user exists
             if (user != null)
@@ -97,7 +97,7 @@ namespace CoolVolleyBallBookingSystem.Controllers
         {
             // Find user by email
             User user = await userManager.FindByEmailAsync(request.UserMail);
-            
+
             // Check if the user exists
             if (user != null)
             {
@@ -172,6 +172,28 @@ namespace CoolVolleyBallBookingSystem.Controllers
             await _dbContext.SaveChangesAsync();
 
             return NoContent();
+        }
+
+        [HttpPut]
+        [Route("ChangeProfile")]
+        public async Task<IActionResult> ChangeProfile([FromBody]ChangeProfileDto changeProfileDto)
+        {
+            User user = await userManager.GetUserAsync(_httpContextAccessor.HttpContext.User);
+            if(changeProfileDto.phoneNumber != null) {
+                user.PhoneNumber = changeProfileDto.phoneNumber;
+            }
+            if (changeProfileDto.userName!= null)
+            {
+                user.UserName = changeProfileDto.userName;
+            }
+            if(changeProfileDto.email!= null)
+            {
+                user.Email = changeProfileDto.email;
+            }
+            var result = await userManager.UpdateAsync(user);
+            return Ok("Profile updated successfully");
+
+
         }
 
     }
