@@ -27,7 +27,9 @@ namespace CoolVolleyBallBookingSystem.Controllers
 
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpGet]
+        [Route("GetAllUserProfiles")]
         public async Task<ActionResult<IEnumerable<User>>> GetAllUsers()
         {
             return await _dbContext.Users.ToListAsync();
