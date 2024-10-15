@@ -1,4 +1,6 @@
-﻿namespace CoolVolleyBallBookingSystem.Models
+﻿using System.Text.Json.Serialization;
+
+namespace CoolVolleyBallBookingSystem.Models
 {
     public class Court
     {
@@ -9,7 +11,7 @@
         public bool IsAvailable { get; set; } = true;
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
-
+        [JsonIgnore]
         public ICollection<Booking> Bookings { get; set; }  
 
 

@@ -51,7 +51,7 @@ namespace CoolVolleyBallBookingSystem.Controllers
             }
 
             Court court = await _dbContext.Courts.FindAsync(requestDto.CourtID);
-            Console.Write(court);
+
             if (court== null)
             {
                 return BadRequest("Court not found");
@@ -71,9 +71,9 @@ namespace CoolVolleyBallBookingSystem.Controllers
 
                 var result = await _dbContext.Bookings.AddAsync(booking);
                 await _dbContext.SaveChangesAsync();
-                return Ok(court);
+                return Ok("Booked successfully on " + requestDto.BookingDate.ToString("yyyy-MM-dd") + " at " + requestDto.StartTime + " in " + court.CourtName);
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 return BadRequest(e.Message);
             }
