@@ -5,6 +5,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using CoolVolleyBallBookingSystem.dto;
+using System.Threading.Tasks;
+using System.Collections.Generic;
 
 namespace CoolVolleyBallBookingSystem.Controllers
 {
@@ -13,15 +15,14 @@ namespace CoolVolleyBallBookingSystem.Controllers
     [ApiController]
     public class CourtController : Controller
     {
-
         private readonly AppDbContext _dbContext;
+
         public CourtController(AppDbContext dbContext)
         {
             _dbContext = dbContext;
-            
-
         }
 
+        // Existing code for GetCourtById
         [HttpGet("{id}")]
         public async Task<IActionResult> GetCourtById(int id)
         {
@@ -32,8 +33,20 @@ namespace CoolVolleyBallBookingSystem.Controllers
             }
 
             return Ok(court);
-
         }
+
+        // Add new method to retrieve all courts
+        [HttpGet("list")]
+        public async Task<IActionResult> GetCourtsList()
+        {
+            // Fetch all courts from the database
+            var courtsList = await _dbContext.Courts.ToListAsync();
+
+            // Return the list of courts
+            return Ok(courtsList);
+        }
+
+        // Existing code for CreateCourt
         [HttpPost("create")]
         public async Task<IActionResult> CreateCourt([FromBody] Courtdto courtDto)
         {
@@ -59,6 +72,5 @@ namespace CoolVolleyBallBookingSystem.Controllers
             // Return the created court with a 201 Created status
             return CreatedAtAction(nameof(GetCourtById), new { id = court.CourtID }, court);
         }
-
     }
 }
