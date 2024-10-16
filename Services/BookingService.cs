@@ -44,5 +44,29 @@ namespace CoolVolleyBallBookingSystem.Services
 
             return booking;
         }
+
+        public async Task<Booking> UpdateBooking(Booking booking, BookingRequestDto requestDto)
+        {
+
+            // Update property for the booking
+            booking.CourtID = requestDto.CourtID;
+            booking.UserID = requestDto.UserID;
+            booking.BookingDate = requestDto.BookingDate;
+            booking.StartTime = requestDto.StartTime;
+            booking.EndTime = requestDto.StartTime.Add(TimeSpan.FromHours(1));
+
+            _dbContext.Bookings.Update(booking);
+            await _dbContext.SaveChangesAsync();
+
+            return booking;
+        }
+
+        public async Task DeleteBooking(Booking booking)
+        {
+
+            _dbContext.Bookings.Remove(booking);
+            await _dbContext.SaveChangesAsync();
+
+        }
     }
 }

@@ -16,7 +16,7 @@ namespace CoolVolleyBallBookingSystem.Controllers
         private readonly AppDbContext _dbContext;
         private readonly UserManager<User> _userManager;
         private readonly BookingService _bookingService;
-        public BookingController(AppDbContext dbContext,UserManager<User> userManager, BookingService bookingService) {
+        public BookingController(AppDbContext dbContext, UserManager<User> userManager, BookingService bookingService) {
             _dbContext = dbContext;
             _userManager = userManager;
             _bookingService = bookingService;
@@ -69,6 +69,72 @@ namespace CoolVolleyBallBookingSystem.Controllers
             return Ok("Booked successfully on " + requestDto.BookingDate.ToString("yyyy-MM-dd") +
                       " from " + requestDto.StartTime + " to " + requestDto.StartTime.Add(TimeSpan.FromHours(1)) +
                       " in " + court.CourtName);
+        }
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> updateBooking(int id, BookingRequestDto requestDto)
+        {
+            Booking booking = await _dbContext.Bookings.FindAsync(id);
+            if (booking == null)
+            {
+                return NotFound(new { Message = $"Booking with ID {id} not found" });
+            }
+
+            var user = await _userManager.FindByIdAsync(requestDto.UserID);
+
+            if (user == null)
+            {
+                return NotFound(new { Message = $"User with ID {requestDto.UserID} not found" });
+            }
+
+            var isAdmin = await _userManager.IsInRoleAsync(user, "Admin");
+
+            if (!isAdmin && booking.UserID != requestDto.UserID)
+            {
+                return Forbid("You can only update your own bookings.");
+            }
+
+            Court court = await _dbContext.Courts.FindAsync(requestDto.CourtID);
+            if (court == null)
+            {
+                return NotFound(new { Message = $"Court with ID {requestDto.CourtID} not found" });
+            }
+
+            // Use the service to create the booking
+            Booking bookingUpdated = await _bookingService.UpdateBooking(booking, requestDto);
+
+            return Ok($"Booked changed succesfully on {requestDto.BookingDate.ToString("yyyy-MM-dd")} from {requestDto.StartTime} " +
+                $"to { requestDto.StartTime.Add(TimeSpan.FromHours(1))} in { court.CourtName}");
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteBooking(int id, string userId)
+        {
+            // Trova la prenotazione esistente
+            Booking booking = await _dbContext.Bookings.FindAsync(id);
+            
+            if (booking == null)
+            {
+                return NotFound(new { Message = $"Booking with ID {id} not found" });
+            }
+            var user = await _userManager.FindByIdAsync(userId);
+
+            if (user == null)
+            {
+                return NotFound(new { Message = $"User with ID {userId} not found" });
+            }
+
+            var isAdmin = await _userManager.IsInRoleAsync(user, "Admin");
+
+            if (!isAdmin && booking.UserID != userId)
+            {
+                return Forbid("You can only update your own bookings.");
+            }
+
+            // Remove the booking from the DB
+            await _bookingService.DeleteBooking(booking);
+
+            return Ok($"Booking removed succeffuly");
         }
     }
 }
