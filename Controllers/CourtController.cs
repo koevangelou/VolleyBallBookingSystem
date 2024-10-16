@@ -66,6 +66,7 @@ namespace CoolVolleyBallBookingSystem.Controllers
         }
 
         // New method to update an existing court
+        [Authorize(Roles = "Admin")] // Restricting access to Admins
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateCourt(int id, [FromBody] Courtdto courtDto)
         {
