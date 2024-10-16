@@ -35,18 +35,15 @@ namespace CoolVolleyBallBookingSystem.Controllers
             return Ok(court);
         }
 
-        // Add new method to retrieve all courts
+        // Existing code to get a list of all courts
         [HttpGet("list")]
         public async Task<IActionResult> GetCourtsList()
         {
-            // Fetch all courts from the database
             var courtsList = await _dbContext.Courts.ToListAsync();
-
-            // Return the list of courts
             return Ok(courtsList);
         }
 
-        // Existing code for CreateCourt
+        // Existing code to create a new court
         [HttpPost("create")]
         public async Task<IActionResult> CreateCourt([FromBody] Courtdto courtDto)
         {
@@ -55,7 +52,6 @@ namespace CoolVolleyBallBookingSystem.Controllers
                 return BadRequest("Invalid court data");
             }
 
-            // Create a new Court entity and map properties from the Courtdto
             var court = new Court
             {
                 CourtName = courtDto.CourtName,
@@ -63,14 +59,51 @@ namespace CoolVolleyBallBookingSystem.Controllers
                 CourtType = courtDto.CourtType ?? "GRASISI"
             };
 
-            // Add the new court to the database
             await _dbContext.Courts.AddAsync(court);
-
-            // Save the changes to the database
             await _dbContext.SaveChangesAsync();
 
-            // Return the created court with a 201 Created status
             return CreatedAtAction(nameof(GetCourtById), new { id = court.CourtID }, court);
+        }
+
+        // New method to update an existing court
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateCourt(int id, [FromBody] Courtdto courtDto)
+        {
+            // Find the court by ID
+            var court = await _dbContext.Courts.FindAsync(id);
+            if (court == null)
+            {
+                return NotFound("Court not found.");
+            }
+
+            // Update court properties from the dto
+            court.CourtName = courtDto.CourtName ?? court.CourtName;
+            court.Location = courtDto.Location ?? court.Location;
+            court.CourtType = courtDto.CourtType ?? court.CourtType;
+
+            // Save changes to the database
+            try
+            {
+                await _dbContext.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!CourtExists(id))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+
+            return NoContent();
+        }
+
+        private bool CourtExists(int id)
+        {
+            return _dbContext.Courts.Any(e => e.CourtID == id);
         }
     }
 }
