@@ -53,7 +53,7 @@ namespace CoolVolleyBallBookingSystem.Data
             modelBuilder.Entity<Training>()
                 .HasOne(t => t.Court)
                 .WithMany(c => c.Trainings)
-                .HasForeignKey(t => t.CourtId)
+                .HasForeignKey(t => t.CourtID)
                 .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<Training>()
