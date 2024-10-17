@@ -11,6 +11,8 @@ namespace CoolVolleyBallBookingSystem.Models
         public TimeSpan StartTime { get; set; }
         public TimeSpan EndTime { get; set; }
         public string Status { get; set; } = "Booked";
+
+        public bool isTraining { get; set; } = false;
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
         [JsonIgnore]

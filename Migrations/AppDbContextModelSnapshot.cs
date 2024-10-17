@@ -56,6 +56,9 @@ namespace CoolVolleyBallBookingSystem.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
+                    b.Property<bool>("isTraining")
+                        .HasColumnType("bit");
+
                     b.HasKey("BookingID");
 
                     b.HasIndex("CourtID");
@@ -248,22 +251,22 @@ namespace CoolVolleyBallBookingSystem.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "1575fbfa-0d02-40dc-8c5d-80cc4b38e69f",
-                            ConcurrencyStamp = "1575fbfa-0d02-40dc-8c5d-80cc4b38e69f",
+                            Id = "b9d5905f-1746-4c58-b775-1370aa54a5b2",
+                            ConcurrencyStamp = "b9d5905f-1746-4c58-b775-1370aa54a5b2",
                             Name = "Player",
                             NormalizedName = "PLAYER"
                         },
                         new
                         {
-                            Id = "a048672c-d89d-4e26-9daf-fa1803e53466",
-                            ConcurrencyStamp = "a048672c-d89d-4e26-9daf-fa1803e53466",
+                            Id = "08709837-a9ee-44fb-9745-56cbe944384c",
+                            ConcurrencyStamp = "08709837-a9ee-44fb-9745-56cbe944384c",
                             Name = "Coach",
                             NormalizedName = "COACH"
                         },
                         new
                         {
-                            Id = "672b782b-327e-4573-a70a-2691370be3be",
-                            ConcurrencyStamp = "672b782b-327e-4573-a70a-2691370be3be",
+                            Id = "f8f2d581-8bb0-484a-a701-051268913aac",
+                            ConcurrencyStamp = "f8f2d581-8bb0-484a-a701-051268913aac",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         });
