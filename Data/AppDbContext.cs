@@ -1,8 +1,10 @@
 ﻿using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore; 
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Cryptography.X509Certificates;
 using CoolVolleyBallBookingSystem.Models;
+using System;
+using System.Collections.Generic;
 
 namespace CoolVolleyBallBookingSystem.Data
 {
@@ -10,17 +12,24 @@ namespace CoolVolleyBallBookingSystem.Data
     {
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
         { }
-        //public DbSet<User> Users { get; set; }
-        public DbSet<Court> Courts { get; set; }    
 
+        // DbSet for courts
+        public DbSet<Court> Courts { get; set; }
+
+        // DbSet for bookings
         public DbSet<Booking> Bookings { get; set; }
 
+        // DbSet for tournaments
         public DbSet<Tournament> Tournaments { get; set; }
+
+        // New: DbSet for trainings
+        public DbSet<Training> Trainings { get; set; }  // Add this line for Training sessions
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
 
+            // Define relationships for Booking
             modelBuilder.Entity<Booking>()
                 .HasOne(b => b.User)
                 .WithMany(u => u.Bookings)
@@ -33,11 +42,27 @@ namespace CoolVolleyBallBookingSystem.Data
                 .HasForeignKey(b => b.CourtID)
                 .OnDelete(DeleteBehavior.Cascade);
 
+            // Define relationships for Tournament
             modelBuilder.Entity<Tournament>()
                 .HasOne(t => t.Organizer)
                 .WithMany(u => u.Tournaments)
-                .HasForeignKey(t => t.OrganizerID).OnDelete(DeleteBehavior.SetNull);
+                .HasForeignKey(t => t.OrganizerID)
+                .OnDelete(DeleteBehavior.SetNull);
 
+            // Define relationships for Training
+            modelBuilder.Entity<Training>()
+                .HasOne(t => t.Court)
+                .WithMany(c => c.Trainings)
+                .HasForeignKey(t => t.CourtId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<Training>()
+                .HasOne(t => t.User)
+                .WithMany(u => u.Trainings)
+                .HasForeignKey(t => t.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // Seed roles (Player, Coach, Admin)
             var readerRoleId = Guid.NewGuid().ToString();
             var writerRoleId = Guid.NewGuid().ToString();
             var adminRoleId = Guid.NewGuid().ToString();
@@ -69,33 +94,5 @@ namespace CoolVolleyBallBookingSystem.Data
 
             modelBuilder.Entity<IdentityRole>().HasData(roles);
         }
-
     }
 }
-
-
-
-    //protected override void OnModelCreating(ModelBuilder modelBuilder)
-    //{
-    //    base.OnModelCreating(modelBuilder);
-
-    //    modelBuilder.Entity<TodoItem>()
-    //        .HasOne(t => t.User)
-    //        .WithMany(u => u.TodoItems)
-    //        .HasForeignKey(t => t.UserId)
-    //        .OnDelete(DeleteBehavior.Cascade); // Set the delete behavior as needed
-
-
-
-    //    base.OnModelCreating(modelBuilder);
-
-        
-    //}
-
-
-    // DbSet for TodoItems - you already have Users through IdentityDbContext<User>
-    //public DbSet<TodoItem> TodoItems { get; set; }
-
-
-
-

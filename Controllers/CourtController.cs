@@ -22,7 +22,7 @@ namespace CoolVolleyBallBookingSystem.Controllers
             _dbContext = dbContext;
         }
 
-        // Existing code for GetCourtById
+        // code for GetCourtById
         [HttpGet("{id}")]
         public async Task<IActionResult> GetCourtById(int id)
         {
@@ -35,7 +35,7 @@ namespace CoolVolleyBallBookingSystem.Controllers
             return Ok(court);
         }
 
-        // Existing code to get a list of all courts
+        // code to get a list of all courts
         [HttpGet("list")]
         public async Task<IActionResult> GetCourtsList()
         {
@@ -43,7 +43,7 @@ namespace CoolVolleyBallBookingSystem.Controllers
             return Ok(courtsList);
         }
 
-        // Existing code to create a new court
+        // code to create a new court
         [HttpPost("create")]
         public async Task<IActionResult> CreateCourt([FromBody] Courtdto courtDto)
         {
@@ -65,24 +65,21 @@ namespace CoolVolleyBallBookingSystem.Controllers
             return CreatedAtAction(nameof(GetCourtById), new { id = court.CourtID }, court);
         }
 
-        // New method to update an existing court
-        [Authorize(Roles = "Admin")] // Restricting access to Admins
+        // code to update an existing court
+        [Authorize(Roles = "Admin")] // Restricting access to other Users
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateCourt(int id, [FromBody] Courtdto courtDto)
         {
-            // Find the court by ID
             var court = await _dbContext.Courts.FindAsync(id);
             if (court == null)
             {
                 return NotFound("Court not found.");
             }
 
-            // Update court properties from the dto
             court.CourtName = courtDto.CourtName ?? court.CourtName;
             court.Location = courtDto.Location ?? court.Location;
             court.CourtType = courtDto.CourtType ?? court.CourtType;
 
-            // Save changes to the database
             try
             {
                 await _dbContext.SaveChangesAsync();
@@ -99,6 +96,26 @@ namespace CoolVolleyBallBookingSystem.Controllers
                 }
             }
 
+            return NoContent();
+        }
+
+        // code to delete a court - Admin only
+        [Authorize(Roles = "Admin")] 
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteCourt(int id)
+        {
+            // Find the court by ID
+            var court = await _dbContext.Courts.FindAsync(id);
+            if (court == null)
+            {
+                return NotFound("Court not found.");
+            }
+
+            // Remove the court from the database
+            _dbContext.Courts.Remove(court);
+            await _dbContext.SaveChangesAsync();
+
+            // Return a 204 No Content status
             return NoContent();
         }
 

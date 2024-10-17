@@ -1,4 +1,6 @@
-﻿using System.Text.Json.Serialization;
+﻿using System;
+using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace CoolVolleyBallBookingSystem.Models
 {
@@ -11,9 +13,12 @@ namespace CoolVolleyBallBookingSystem.Models
         public bool IsAvailable { get; set; } = true;
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
+
         [JsonIgnore]
-        public ICollection<Booking> Bookings { get; set; }  
+        public ICollection<Booking> Bookings { get; set; }
 
-
+        // Add this navigation property for Trainings
+        [JsonIgnore]
+        public ICollection<Training> Trainings { get; set; }
     }
 }
