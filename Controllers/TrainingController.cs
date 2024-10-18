@@ -31,7 +31,7 @@ namespace CoolVolleyBallBookingSystem.Controllers
         public async Task<IActionResult> AssignUserToTraining([FromBody] AssignTrainingDto assignTrainingDto)
         {
             // Ensure the Court exists
-            var court = await _dbContext.Courts.FindAsync(assignTrainingDto.CourtId);
+            var court = await _dbContext.Courts.FindAsync(assignTrainingDto.CourtID); // Updated here
             if (court == null)
             {
                 return NotFound("Court not found.");
@@ -44,12 +44,12 @@ namespace CoolVolleyBallBookingSystem.Controllers
                 return NotFound("User not found.");
             }
 
-            // Calculate end time (assuming training lasts 1 hour)
+            // Calculate start and end time (assuming training lasts 1 hour)
             var startTime = assignTrainingDto.TrainingDate.TimeOfDay; // Getting the time part of the TrainingDate
             var endTime = startTime.Add(TimeSpan.FromHours(1)); // Assuming 1-hour training sessions
 
             // Check for booking conflicts
-            bool isConflict = await _bookingService.IsBookingConflict(assignTrainingDto.CourtId, assignTrainingDto.TrainingDate.Date, startTime, endTime);
+            bool isConflict = await _bookingService.IsBookingConflict(assignTrainingDto.CourtID, assignTrainingDto.TrainingDate.Date, startTime, endTime); // Updated here
             if (isConflict)
             {
                 return BadRequest("The selected time slot is already booked for this court.");
@@ -58,13 +58,30 @@ namespace CoolVolleyBallBookingSystem.Controllers
             // Create a new Training session
             var training = new Training
             {
-                CourtId = assignTrainingDto.CourtId,
+                CourtID = assignTrainingDto.CourtID, // Updated here
                 UserId = assignTrainingDto.UserId,
                 TrainingDate = assignTrainingDto.TrainingDate
             };
 
             // Save the training to the database
             await _dbContext.Trainings.AddAsync(training);
+
+            // Create a booking entry for the training session
+            var booking = new Booking
+            {
+                UserID = user.Id,
+                CourtID = court.CourtID, // Updated here
+                BookingDate = assignTrainingDto.TrainingDate.Date,
+                StartTime = startTime,
+                EndTime = endTime,
+                Status = "Confirmed", // or other status based on your logic
+                isTraining = true,
+                CreatedAt = DateTime.UtcNow,
+                UpdatedAt = DateTime.UtcNow
+            };
+
+            // Save the booking to the database
+            await _dbContext.Bookings.AddAsync(booking);
             await _dbContext.SaveChangesAsync();
 
             // Return success response
@@ -75,7 +92,7 @@ namespace CoolVolleyBallBookingSystem.Controllers
     // DTO class for assigning a user to training
     public class AssignTrainingDto
     {
-        public int CourtId { get; set; } // ID of the court
+        public int CourtID { get; set; } // ID of the court (updated here)
         public string UserId { get; set; } // ID of the user
         public DateTime TrainingDate { get; set; } // Training date and time
     }

@@ -151,6 +151,33 @@ namespace CoolVolleyBallBookingSystem.Migrations
                     b.ToTable("Tournaments");
                 });
 
+            modelBuilder.Entity("CoolVolleyBallBookingSystem.Models.Training", b =>
+                {
+                    b.Property<int>("TrainingId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("TrainingId"));
+
+                    b.Property<int>("CourtID")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("TrainingDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("TrainingId");
+
+                    b.HasIndex("CourtID");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Trainings");
+                });
+
             modelBuilder.Entity("CoolVolleyBallBookingSystem.Models.User", b =>
                 {
                     b.Property<string>("Id")
@@ -251,22 +278,22 @@ namespace CoolVolleyBallBookingSystem.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "b9d5905f-1746-4c58-b775-1370aa54a5b2",
-                            ConcurrencyStamp = "b9d5905f-1746-4c58-b775-1370aa54a5b2",
+                            Id = "5d685feb-6bc1-4a19-bc27-8e8e232c9941",
+                            ConcurrencyStamp = "5d685feb-6bc1-4a19-bc27-8e8e232c9941",
                             Name = "Player",
                             NormalizedName = "PLAYER"
                         },
                         new
                         {
-                            Id = "08709837-a9ee-44fb-9745-56cbe944384c",
-                            ConcurrencyStamp = "08709837-a9ee-44fb-9745-56cbe944384c",
+                            Id = "25024148-9105-4291-b4bb-53787a358df5",
+                            ConcurrencyStamp = "25024148-9105-4291-b4bb-53787a358df5",
                             Name = "Coach",
                             NormalizedName = "COACH"
                         },
                         new
                         {
-                            Id = "f8f2d581-8bb0-484a-a701-051268913aac",
-                            ConcurrencyStamp = "f8f2d581-8bb0-484a-a701-051268913aac",
+                            Id = "0d70b007-20ee-471f-91ed-57e296e0b68e",
+                            ConcurrencyStamp = "0d70b007-20ee-471f-91ed-57e296e0b68e",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         });
@@ -407,6 +434,25 @@ namespace CoolVolleyBallBookingSystem.Migrations
                     b.Navigation("Organizer");
                 });
 
+            modelBuilder.Entity("CoolVolleyBallBookingSystem.Models.Training", b =>
+                {
+                    b.HasOne("CoolVolleyBallBookingSystem.Models.Court", "Court")
+                        .WithMany("Trainings")
+                        .HasForeignKey("CourtID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("CoolVolleyBallBookingSystem.Models.User", "User")
+                        .WithMany("Trainings")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Court");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -461,6 +507,8 @@ namespace CoolVolleyBallBookingSystem.Migrations
             modelBuilder.Entity("CoolVolleyBallBookingSystem.Models.Court", b =>
                 {
                     b.Navigation("Bookings");
+
+                    b.Navigation("Trainings");
                 });
 
             modelBuilder.Entity("CoolVolleyBallBookingSystem.Models.User", b =>
@@ -468,6 +516,8 @@ namespace CoolVolleyBallBookingSystem.Migrations
                     b.Navigation("Bookings");
 
                     b.Navigation("Tournaments");
+
+                    b.Navigation("Trainings");
                 });
 #pragma warning restore 612, 618
         }
