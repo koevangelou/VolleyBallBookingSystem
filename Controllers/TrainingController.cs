@@ -6,11 +6,11 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace CoolVolleyBallBookingSystem.Controllers
 {
-    [Authorize(Roles = "Coach")]
     [Route("api/[controller]")]
     [ApiController]
     public class TrainingController : ControllerBase
@@ -26,12 +26,13 @@ namespace CoolVolleyBallBookingSystem.Controllers
             _bookingService = bookingService;
         }
 
-        // Method to assign a user to training on a specific court
+        // Method to assign a user to training on a specific court (accessible to Coaches only)
+        [Authorize(Roles = "Coach")]
         [HttpPost("assign")]
         public async Task<IActionResult> AssignUserToTraining([FromBody] AssignTrainingDto assignTrainingDto)
         {
             // Ensure the Court exists
-            var court = await _dbContext.Courts.FindAsync(assignTrainingDto.CourtID); // Updated here
+            var court = await _dbContext.Courts.FindAsync(assignTrainingDto.CourtID);
             if (court == null)
             {
                 return NotFound("Court not found.");
@@ -45,11 +46,11 @@ namespace CoolVolleyBallBookingSystem.Controllers
             }
 
             // Calculate start and end time (assuming training lasts 1 hour)
-            var startTime = assignTrainingDto.TrainingDate.TimeOfDay; // Getting the time part of the TrainingDate
-            var endTime = startTime.Add(TimeSpan.FromHours(1)); // Assuming 1-hour training sessions
+            var startTime = assignTrainingDto.TrainingDate.TimeOfDay;
+            var endTime = startTime.Add(TimeSpan.FromHours(1));
 
             // Check for booking conflicts
-            bool isConflict = await _bookingService.IsBookingConflict(assignTrainingDto.CourtID, assignTrainingDto.TrainingDate.Date, startTime, endTime); // Updated here
+            bool isConflict = await _bookingService.IsBookingConflict(assignTrainingDto.CourtID, assignTrainingDto.TrainingDate.Date, startTime, endTime);
             if (isConflict)
             {
                 return BadRequest("The selected time slot is already booked for this court.");
@@ -58,7 +59,7 @@ namespace CoolVolleyBallBookingSystem.Controllers
             // Create a new Training session
             var training = new Training
             {
-                CourtID = assignTrainingDto.CourtID, // Updated here
+                CourtID = assignTrainingDto.CourtID,
                 UserId = assignTrainingDto.UserId,
                 TrainingDate = assignTrainingDto.TrainingDate
             };
@@ -70,11 +71,11 @@ namespace CoolVolleyBallBookingSystem.Controllers
             var booking = new Booking
             {
                 UserID = user.Id,
-                CourtID = court.CourtID, // Updated here
+                CourtID = court.CourtID,
                 BookingDate = assignTrainingDto.TrainingDate.Date,
                 StartTime = startTime,
                 EndTime = endTime,
-                Status = "Confirmed", // or other status based on your logic
+                Status = "Confirmed",
                 isTraining = true,
                 CreatedAt = DateTime.UtcNow,
                 UpdatedAt = DateTime.UtcNow
@@ -87,13 +88,64 @@ namespace CoolVolleyBallBookingSystem.Controllers
             // Return success response
             return Ok($"User {user.UserName} has been successfully assigned to training on court {court.CourtName}.");
         }
+
+        // Method: Retrieve all trainings (Accessible to all users)
+        [Authorize] // All authenticated users can access
+        [HttpGet("all")]
+        public async Task<IActionResult> GetAllTrainings()
+        {
+            var trainings = await _dbContext.Trainings.ToListAsync();
+            return Ok(trainings);
+        }
+
+        // Method: Retrieve a specific training by ID (Accessible to all users)
+        [Authorize] // All authenticated users can access
+        [HttpGet("{trainingId}")]
+        public async Task<IActionResult> GetTrainingById(int trainingId)
+        {
+            var training = await _dbContext.Trainings.FindAsync(trainingId);
+            if (training == null)
+            {
+                return NotFound("Training not found.");
+            }
+
+            return Ok(training);
+        }
+
+        // Method: Delete a training and its associated booking (Accessible only to Admins)
+        [Authorize(Roles = "Admin")] // Only admins can delete
+        [HttpDelete("{trainingId}")]
+        public async Task<IActionResult> DeleteTraining(int trainingId)
+        {
+            var training = await _dbContext.Trainings.FindAsync(trainingId);
+            if (training == null)
+            {
+                return NotFound("Training not found.");
+            }
+
+            // Find the associated booking
+            var booking = await _dbContext.Bookings
+                .FirstOrDefaultAsync(b => b.CourtID == training.CourtID && b.UserID == training.UserId && b.BookingDate == training.TrainingDate.Date);
+
+            // If a booking exists, delete it
+            if (booking != null)
+            {
+                _dbContext.Bookings.Remove(booking);
+            }
+
+            // Delete the training itself
+            _dbContext.Trainings.Remove(training);
+            await _dbContext.SaveChangesAsync();
+
+            return Ok("Training and associated booking (if any) have been successfully deleted.");
+        }
     }
 
     // DTO class for assigning a user to training
     public class AssignTrainingDto
     {
-        public int CourtID { get; set; } // ID of the court (updated here)
-        public string UserId { get; set; } // ID of the user
-        public DateTime TrainingDate { get; set; } // Training date and time
+        public int CourtID { get; set; }
+        public string UserId { get; set; }
+        public DateTime TrainingDate { get; set; }
     }
 }
