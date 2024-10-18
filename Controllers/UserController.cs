@@ -201,5 +201,33 @@ namespace CoolVolleyBallBookingSystem.Controllers
 
         }
 
+        [HttpPost]
+        [Route("logout")]
+        public async Task<IActionResult> logout()
+        {
+            try
+            {
+                // Get the current user
+                var user = await userManager.GetUserAsync(_httpContextAccessor.HttpContext.User);
+                if (user == null)
+                {
+                    return BadRequest("User not found");
+                }
+
+                // Remove the refresh token
+                await userManager.RemoveAuthenticationTokenAsync(
+                    user,
+                    IdentityConstants.BearerScheme,
+                    "RefreshToken"
+                );
+
+                return Ok(new { message = "Logged out successfully" });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { error = "Logout failed", message = ex.Message });
+            }
+        }
+
     }
     }
