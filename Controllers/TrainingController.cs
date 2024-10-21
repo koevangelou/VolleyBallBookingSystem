@@ -139,6 +139,45 @@ namespace CoolVolleyBallBookingSystem.Controllers
 
             return Ok("Training and associated booking (if any) have been successfully deleted.");
         }
+
+        // Method: Update an existing training session
+        [Authorize(Roles = "Coach")] // Only coaches can update
+        [HttpPut("update/{trainingId}")]
+        public async Task<IActionResult> UpdateTraining(int trainingId, [FromBody] UpdateTrainingDto updateTrainingDto)
+        {
+            var training = await _dbContext.Trainings.FindAsync(trainingId);
+            if (training == null)
+            {
+                return NotFound("Training not found.");
+            }
+
+            // Update the training details
+            training.CourtID = updateTrainingDto.CourtID;
+            training.TrainingDate = updateTrainingDto.TrainingDate;
+
+            // Update the associated booking, if any
+            var booking = await _dbContext.Bookings
+                .FirstOrDefaultAsync(b => b.CourtID == training.CourtID && b.UserID == training.UserId && b.BookingDate == training.TrainingDate.Date);
+            if (booking != null)
+            {
+                booking.CourtID = updateTrainingDto.CourtID;
+                booking.BookingDate = updateTrainingDto.TrainingDate.Date;
+                booking.StartTime = updateTrainingDto.TrainingDate.TimeOfDay;
+                booking.EndTime = booking.StartTime.Add(TimeSpan.FromHours(1));
+                booking.UpdatedAt = DateTime.UtcNow;
+            }
+
+            await _dbContext.SaveChangesAsync();
+
+            return Ok("Training session has been successfully updated.");
+        }
+    }
+
+    // DTO class for updating a training session
+    public class UpdateTrainingDto
+    {
+        public int CourtID { get; set; }
+        public DateTime TrainingDate { get; set; }
     }
 
     // DTO class for assigning a user to training
