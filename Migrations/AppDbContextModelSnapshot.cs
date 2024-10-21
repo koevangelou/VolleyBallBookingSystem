@@ -186,6 +186,9 @@ namespace CoolVolleyBallBookingSystem.Migrations
                     b.Property<int>("AccessFailedCount")
                         .HasColumnType("int");
 
+                    b.Property<int?>("BookingID")
+                        .HasColumnType("int");
+
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
                         .HasColumnType("nvarchar(max)");
@@ -238,6 +241,8 @@ namespace CoolVolleyBallBookingSystem.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("BookingID");
+
                     b.HasIndex("NormalizedEmail")
                         .HasDatabaseName("EmailIndex");
 
@@ -278,22 +283,22 @@ namespace CoolVolleyBallBookingSystem.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "5d685feb-6bc1-4a19-bc27-8e8e232c9941",
-                            ConcurrencyStamp = "5d685feb-6bc1-4a19-bc27-8e8e232c9941",
+                            Id = "6a53f929-fb7b-4158-8adf-87a885953b90",
+                            ConcurrencyStamp = "6a53f929-fb7b-4158-8adf-87a885953b90",
                             Name = "Player",
                             NormalizedName = "PLAYER"
                         },
                         new
                         {
-                            Id = "25024148-9105-4291-b4bb-53787a358df5",
-                            ConcurrencyStamp = "25024148-9105-4291-b4bb-53787a358df5",
+                            Id = "a045c080-3976-41b9-a8cc-17600391f694",
+                            ConcurrencyStamp = "a045c080-3976-41b9-a8cc-17600391f694",
                             Name = "Coach",
                             NormalizedName = "COACH"
                         },
                         new
                         {
-                            Id = "0d70b007-20ee-471f-91ed-57e296e0b68e",
-                            ConcurrencyStamp = "0d70b007-20ee-471f-91ed-57e296e0b68e",
+                            Id = "482dbde8-b56f-4787-8b20-3dfd1c87534e",
+                            ConcurrencyStamp = "482dbde8-b56f-4787-8b20-3dfd1c87534e",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         });
@@ -453,6 +458,13 @@ namespace CoolVolleyBallBookingSystem.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("CoolVolleyBallBookingSystem.Models.User", b =>
+                {
+                    b.HasOne("CoolVolleyBallBookingSystem.Models.Booking", null)
+                        .WithMany("players")
+                        .HasForeignKey("BookingID");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -502,6 +514,11 @@ namespace CoolVolleyBallBookingSystem.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("CoolVolleyBallBookingSystem.Models.Booking", b =>
+                {
+                    b.Navigation("players");
                 });
 
             modelBuilder.Entity("CoolVolleyBallBookingSystem.Models.Court", b =>

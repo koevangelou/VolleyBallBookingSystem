@@ -11,7 +11,7 @@ namespace CoolVolleyBallBookingSystem.Models
         public DateTime BookingDate { get; set; }
         public TimeSpan StartTime { get; set; }
         public TimeSpan EndTime { get; set; }
-        public string Status { get; set; } = "Booked"; // Default status set to "Booked"
+        public string Status { get; set; } = "Pending"; // Default status set to "Booked"
         public bool isTraining { get; set; } = false; // Indicates if this booking is a training session
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
@@ -21,5 +21,7 @@ namespace CoolVolleyBallBookingSystem.Models
         public User User { get; set; }
         [JsonIgnore] // Prevents circular reference during serialization
         public Court Court { get; set; }
+
+        public User[] Players { get; set; } = []; 
     }
 }

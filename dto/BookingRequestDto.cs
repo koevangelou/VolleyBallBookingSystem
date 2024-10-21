@@ -1,4 +1,6 @@
-﻿namespace CoolVolleyBallBookingSystem.dto
+﻿using CoolVolleyBallBookingSystem.Models;
+
+namespace CoolVolleyBallBookingSystem.dto
 {
     public class BookingRequestDto
     {
@@ -10,5 +12,6 @@
 
         public TimeSpan StartTime { get; set; }
 
+        public int [] Players { get; set; }  = [];
     }
 }
