@@ -12,6 +12,6 @@ namespace CoolVolleyBallBookingSystem.dto
 
         public TimeSpan StartTime { get; set; }
 
-        public int [] Players { get; set; }  = [];
+        public string [] Players { get; set; }  = [];
     }
 }

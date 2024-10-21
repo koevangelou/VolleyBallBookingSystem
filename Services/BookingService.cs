@@ -37,18 +37,9 @@ namespace CoolVolleyBallBookingSystem.Services
                 throw new Exception("Max players 3 ");
             }
 
-            User[] players = []; 
-            foreach (var item in requestDto.Players)
-            {
-                if (await _userManager.FindByIdAsync(item.ToString()) != null)
-                {
-                    players.Append(await _userManager.FindByIdAsync(item.ToString()));
-                }
-                
-                
-            }
+            
 
-            Booking booking = new Booking
+                Booking booking = new Booking
             {
                 CourtID = requestDto.CourtID,
                 User = user,
@@ -57,10 +48,25 @@ namespace CoolVolleyBallBookingSystem.Services
                 BookingDate = requestDto.BookingDate,
                 StartTime = requestDto.StartTime,
                 EndTime = requestDto.StartTime.Add(TimeSpan.FromHours(1)),
-                Players= players
+                //BookingPlayers=players
             };
 
-            await _dbContext.Bookings.AddAsync(booking);
+            var players = new List<BookingPlayer>();
+            foreach (var userId in requestDto.Players)
+            {
+                if (await _userManager.FindByIdAsync(userId) != null)
+                {
+                    players.Add(new BookingPlayer
+                    {
+                        UserId = userId,
+                        BookingId = booking.BookingID  // Assuming you have the booking object
+                    });
+                }
+
+            }
+            booking.BookingPlayers = players;
+
+                await _dbContext.Bookings.AddAsync(booking);
             await _dbContext.SaveChangesAsync();
 
             return booking;

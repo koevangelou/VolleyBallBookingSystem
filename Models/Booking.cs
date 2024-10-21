@@ -22,6 +22,8 @@ namespace CoolVolleyBallBookingSystem.Models
         [JsonIgnore] // Prevents circular reference during serialization
         public Court Court { get; set; }
 
-        public User[] Players { get; set; } = []; 
+        [JsonIgnore]
+        public ICollection<BookingPlayer> BookingPlayers { get; set; }
+
     }
 }
