@@ -141,10 +141,6 @@ namespace CoolVolleyBallBookingSystem.Migrations
                     b.Property<string>("OrganizerID")
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("Participants")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<DateTime>("StartDate")
                         .HasColumnType("datetime2");
 
@@ -293,22 +289,22 @@ namespace CoolVolleyBallBookingSystem.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "cf0a9fa4-4f71-455a-abfa-d07493c5198a",
-                            ConcurrencyStamp = "cf0a9fa4-4f71-455a-abfa-d07493c5198a",
+                            Id = "77d4e48b-0841-47dc-85e2-b6d26ace0680",
+                            ConcurrencyStamp = "77d4e48b-0841-47dc-85e2-b6d26ace0680",
                             Name = "Player",
                             NormalizedName = "PLAYER"
                         },
                         new
                         {
-                            Id = "7313e192-691a-4c95-b08b-f6584334c853",
-                            ConcurrencyStamp = "7313e192-691a-4c95-b08b-f6584334c853",
+                            Id = "90f54b3c-f869-42b1-a74a-66b95c026aef",
+                            ConcurrencyStamp = "90f54b3c-f869-42b1-a74a-66b95c026aef",
                             Name = "Coach",
                             NormalizedName = "COACH"
                         },
                         new
                         {
-                            Id = "76a95c65-b171-45c5-b1aa-8f5581183436",
-                            ConcurrencyStamp = "76a95c65-b171-45c5-b1aa-8f5581183436",
+                            Id = "6ce3af47-5f7e-4237-99ae-ea3b8ecfa63f",
+                            ConcurrencyStamp = "6ce3af47-5f7e-4237-99ae-ea3b8ecfa63f",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         });
