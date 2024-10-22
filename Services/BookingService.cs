@@ -11,7 +11,7 @@ namespace CoolVolleyBallBookingSystem.Services
         private readonly AppDbContext _dbContext;
         private readonly UserManager<User> _userManager;
 
-        public BookingService(AppDbContext dbContext,UserManager<User> userManager)
+        public BookingService(AppDbContext dbContext, UserManager<User> userManager)
         {
             _dbContext = dbContext;
             _userManager = userManager;
@@ -31,42 +31,63 @@ namespace CoolVolleyBallBookingSystem.Services
         // Method to create a new booking
         public async Task<Booking> CreateBooking(User user, Court court, BookingRequestDto requestDto)
         {
-
-            if (requestDto.Players.Length > 3)
+            // Check if too many players are being added
+            if (requestDto.Players.Length != 3)
             {
-                throw new Exception("Max players 3 ");
+                throw new Exception("Please add 3 players");
             }
 
-            
-
-                Booking booking = new Booking
+            // Create a new booking
+            Booking booking = new Booking
             {
                 CourtID = requestDto.CourtID,
                 User = user,
                 Court = court,
-                UserID = requestDto.UserID,
+                UserID = user.Id,
                 BookingDate = requestDto.BookingDate,
                 StartTime = requestDto.StartTime,
-                EndTime = requestDto.StartTime.Add(TimeSpan.FromHours(1)),
-                //BookingPlayers=players
+                EndTime = requestDto.StartTime.Add(TimeSpan.FromHours(1)) // Assuming 1-hour default booking
             };
 
+            // Add the players
             var players = new List<BookingPlayer>();
-            foreach (var userId in requestDto.Players)
+
+            // Add the creator of the booking first
+            players.Add(new BookingPlayer
             {
-                if (await _userManager.FindByIdAsync(userId) != null)
+                UserId = user.Id,
+                Booking = booking,
+                BookingId = booking.BookingID
+            });
+
+            // Add other players from the request
+            foreach (var playerMail in requestDto.Players)
+            {
+                var player = await _userManager.FindByEmailAsync(playerMail);
+                if (player == null)
                 {
-                    players.Add(new BookingPlayer
-                    {
-                        UserId = userId,
-                        BookingId = booking.BookingID  // Assuming you have the booking object
-                    });
+                    throw new Exception($"Player with mail {playerMail} not found.");
                 }
 
+                if (players.Any(p => p.UserId == player.Id))
+                {
+                    throw new Exception($"Player with mail {playerMail} is already part of the booking.");
+                }
+
+                players.Add(new BookingPlayer
+                {
+                    UserId = player.Id,
+                    Booking = booking,
+                    BookingId = booking.BookingID
+                });
             }
+
             booking.BookingPlayers = players;
 
-                await _dbContext.Bookings.AddAsync(booking);
+
+            // Save the booking to the database
+            booking.Status = "Completed"; // Mark the booking as completed
+            await _dbContext.Bookings.AddAsync(booking);
             await _dbContext.SaveChangesAsync();
 
             return booking;
