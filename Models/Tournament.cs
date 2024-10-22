@@ -9,7 +9,6 @@
         public DateTime EndDate { get; set; }
         public string Location { get; set; }
         public int MaxTeams { get; set; }
-        public string Participants { get; set; }  // JSON string
         public string Status { get; set; } = "Upcoming";
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }

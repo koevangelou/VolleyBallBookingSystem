@@ -22,6 +22,8 @@ namespace CoolVolleyBallBookingSystem.Data
         // DbSet for tournaments
         public DbSet<Tournament> Tournaments { get; set; }
 
+        public DbSet<User> Users { get; set; }
+
         // New: DbSet for trainings
         public DbSet<Training> Trainings { get; set; }  // Add this line for Training sessions
 
