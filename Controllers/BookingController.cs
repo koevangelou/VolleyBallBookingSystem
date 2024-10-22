@@ -64,7 +64,14 @@ namespace CoolVolleyBallBookingSystem.Controllers
             }
 
             // Use the service to create the booking
-            Booking booking = await _bookingService.CreateBooking(user, court, requestDto);
+            try
+            {
+                Booking booking = await _bookingService.CreateBooking(user, court, requestDto);
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
 
             return Ok("Booked successfully on " + requestDto.BookingDate.ToString("yyyy-MM-dd") +
                       " from " + requestDto.StartTime + " to " + requestDto.StartTime.Add(TimeSpan.FromHours(1)) +

@@ -14,5 +14,8 @@ namespace CoolVolleyBallBookingSystem.Models
 
         // Add this navigation property for Trainings
         public ICollection<Training>? Trainings { get; set; }  // Nullable ICollection
+
+
+        public ICollection<BookingPlayer> PlayerBookings { get; set; }
     }
 }

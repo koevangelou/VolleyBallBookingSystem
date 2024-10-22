@@ -62,6 +62,24 @@ namespace CoolVolleyBallBookingSystem.Data
                 .HasForeignKey(t => t.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
 
+
+            modelBuilder.Entity<BookingPlayer>()
+            .HasKey(bp => new { bp.BookingId, bp.UserId });
+
+            modelBuilder.Entity<BookingPlayer>()
+                .HasOne(bp => bp.Booking)
+                .WithMany(b => b.BookingPlayers)
+                .HasForeignKey(bp => bp.BookingId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<BookingPlayer>()
+                .HasOne(bp => bp.User)
+                .WithMany(u => u.PlayerBookings)
+                .HasForeignKey(bp => bp.UserId)
+                .OnDelete(DeleteBehavior.NoAction);
+
+
+
             // Seed roles (Player, Coach, Admin)
             var readerRoleId = Guid.NewGuid().ToString();
             var writerRoleId = Guid.NewGuid().ToString();
