@@ -44,7 +44,7 @@ namespace CoolVolleyBallBookingSystem.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateBooking(BookingRequestDto requestDto)
         {
-            User user = await _userManager.FindByIdAsync(requestDto.UserID);
+            User user = await _userManager.FindByEmailAsync(requestDto.UserMail);
             if (user == null)
             {
                 return BadRequest("User with Id not found");

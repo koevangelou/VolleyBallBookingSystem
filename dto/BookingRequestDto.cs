@@ -6,7 +6,7 @@ namespace CoolVolleyBallBookingSystem.dto
     {
         public int CourtID { get; set; }
 
-        public string UserID { get; set; }
+        public string UserMail { get; set; }
 
         public DateTime BookingDate { get; set; }
 

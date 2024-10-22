@@ -289,22 +289,37 @@ namespace CoolVolleyBallBookingSystem.Migrations
                     b.HasData(
                         new
                         {
+<<<<<<< HEAD
                             Id = "77d4e48b-0841-47dc-85e2-b6d26ace0680",
                             ConcurrencyStamp = "77d4e48b-0841-47dc-85e2-b6d26ace0680",
+=======
+                            Id = "184ef69d-4544-4f4e-87bb-05643ad7fd22",
+                            ConcurrencyStamp = "184ef69d-4544-4f4e-87bb-05643ad7fd22",
+>>>>>>> 2b9150b0181f9435489fb819d03482eabeb81aa7
                             Name = "Player",
                             NormalizedName = "PLAYER"
                         },
                         new
                         {
+<<<<<<< HEAD
                             Id = "90f54b3c-f869-42b1-a74a-66b95c026aef",
                             ConcurrencyStamp = "90f54b3c-f869-42b1-a74a-66b95c026aef",
+=======
+                            Id = "b258f2ab-2ae5-43ad-a486-d2e4435a1422",
+                            ConcurrencyStamp = "b258f2ab-2ae5-43ad-a486-d2e4435a1422",
+>>>>>>> 2b9150b0181f9435489fb819d03482eabeb81aa7
                             Name = "Coach",
                             NormalizedName = "COACH"
                         },
                         new
                         {
+<<<<<<< HEAD
                             Id = "6ce3af47-5f7e-4237-99ae-ea3b8ecfa63f",
                             ConcurrencyStamp = "6ce3af47-5f7e-4237-99ae-ea3b8ecfa63f",
+=======
+                            Id = "58b72060-8c05-4a8c-aa85-ef4964fcf49c",
+                            ConcurrencyStamp = "58b72060-8c05-4a8c-aa85-ef4964fcf49c",
+>>>>>>> 2b9150b0181f9435489fb819d03482eabeb81aa7
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         });
