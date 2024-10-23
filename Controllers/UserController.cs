@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using CoolVolleyBallBookingSystem.dto;
+using CoolVolleyBallBookingSystem.Services;
 
 namespace CoolVolleyBallBookingSystem.Controllers
 {
@@ -18,12 +19,14 @@ namespace CoolVolleyBallBookingSystem.Controllers
         private readonly AppDbContext _dbContext;
         private readonly UserManager<User> userManager;
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IUserService _userService;
 
-        public UserController(AppDbContext dbContext, UserManager<User> userManager, IHttpContextAccessor httpContextAccessor)
+        public UserController(AppDbContext dbContext, UserManager<User> userManager, IHttpContextAccessor httpContextAccessor,IUserService userService)
         {
             _dbContext = dbContext;
             this.userManager = userManager;
             _httpContextAccessor = httpContextAccessor;
+            _userService = userService;
 
         }
 
@@ -39,15 +42,21 @@ namespace CoolVolleyBallBookingSystem.Controllers
         [Route("GetCurrentUserProfile")]
         public async Task<ActionResult> GetCurrentUserProfile()
         {
-            User user = await userManager.GetUserAsync(_httpContextAccessor.HttpContext.User);
+            User user = await _userService.GetCurrentUser();
+            if (user!= null) { 
             return Ok(user);
+            }
+            else
+            {
+                return BadRequest("Please log in");
+            }
         }
 
         [Authorize(Roles = "Admin")]
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetUserById(int id)
+        public async Task<IActionResult> GetUserById(string id)
         {
-            var user = await _dbContext.Users.FindAsync(id);
+            var user = await _userService.GetUserById(id);
             if (user == null)
             {
                 return NotFound();
@@ -64,30 +73,14 @@ namespace CoolVolleyBallBookingSystem.Controllers
         public async Task<ActionResult> SetUserRole([FromBody] SetUserRoleRequest request)
         {
             // Find user by email
-            User user = await userManager.FindByEmailAsync(request.UserMail);
-
-
-
-            // Check if the user exists
-            if (user != null)
+            try
             {
-                // Add roles to the user
-                var result = await userManager.AddToRolesAsync(user, request.Roles);
-
-                // Check if the operation was successful
-                if (result.Succeeded)
-                {
-                    return Ok($"Roles: {string.Join(", ", request.Roles)} were successfully added to {request.UserMail}");
-                }
-                else
-                {
-                    // If it failed, return the errors
-                    return BadRequest(result.Errors);
-                }
+                return Ok( await _userService.SetUserRole(request.UserMail, request.Roles));
             }
-
-            // Return error if user is not found
-            return NotFound($"User with email {request.UserMail} not found");
+            catch(Exception e)
+            {
+                return BadRequest(e.Message);
+            }
         }
 
         [Authorize(Roles = "Admin")]
@@ -95,108 +88,50 @@ namespace CoolVolleyBallBookingSystem.Controllers
         [Route("removeRole")]
         public async Task<ActionResult> RemoveUserRole([FromBody] SetUserRoleRequest request)
         {
-            // Find user by email
-            User user = await userManager.FindByEmailAsync(request.UserMail);
-
-            // Check if the user exists
-            if (user != null)
+            try
             {
-                // Remove roles to the user
-                var result = await userManager.RemoveFromRolesAsync(user, request.Roles);
-
-                // Check if the operation was successful
-                if (result.Succeeded)
-                {
-                    return Ok($"Roles: {string.Join(", ", request.Roles)} were successfully removed from {request.UserMail}");
-                }
-                else
-                {
-                    // If it failed, return the errors
-                    return BadRequest(result.Errors);
-                }
+                return Ok (await _userService.RemoveUserRole(request.UserMail, request.Roles));
+            }catch(Exception e)
+            {
+                return BadRequest(e.Message);
             }
-
-            // Return error if user is not found
-            return NotFound($"User with email {request.UserMail} not found");
         }
 
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateUser(string id, [FromBody] User updatedUser)
         {
-            if (id != updatedUser.Id)
-            {
-                return BadRequest("User ID mismatch");
-            }
-
-            var user = await _dbContext.Users.FindAsync(id);
-            if (user == null)
-            {
-                return NotFound();
-            }
-
-
-            //user.Username = updatedUser.Username;
-            user.Email = updatedUser.Email;
-            user.PasswordHash = updatedUser.PasswordHash;
-            user.UpdatedAt = DateTime.UtcNow;
-
             try
             {
-                await _dbContext.SaveChangesAsync();
+                return Ok(await _userService.UpdateUser(id, updatedUser));
             }
-            catch (DbUpdateConcurrencyException)
+            catch(Exception e)
             {
-                if (!_dbContext.Users.Any(u => u.Id == id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
+                return BadRequest(e.Message);
             }
-
-            return NoContent();
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteUser(int id)
+        public async Task<IActionResult> DeleteUser(string id)
         {
-            var user = await _dbContext.Users.FindAsync(id);
-            if (user == null)
+            try
             {
-                return NotFound();
-            }
-
-            _dbContext.Users.Remove(user);
-            await _dbContext.SaveChangesAsync();
-
-            return NoContent();
+                return Ok( _userService.DeleteUserById(id));
+            }catch(Exception e)
+            {
+                return BadRequest(e.Message);            }
         }
 
         [HttpPut]
         [Route("ChangeProfile")]
         public async Task<IActionResult> ChangeProfile([FromBody]ChangeProfileDto changeProfileDto)
         {
-            User user = await userManager.GetUserAsync(_httpContextAccessor.HttpContext.User);
-            if(changeProfileDto.phoneNumber != null) {
-                user.PhoneNumber = changeProfileDto.phoneNumber;
-            }
-            if (changeProfileDto.userName!= null)
-            {
-                user.UserName = changeProfileDto.userName;
-            }
-            if(changeProfileDto.email!= null)
-            {
-                user.Email = changeProfileDto.email;
-            }
             try
             {
-                var result = await userManager.UpdateAsync(user);
-                return Ok("Profile updated successfully");
+                return Ok(await _userService.ChangeCurrentProfile(changeProfileDto));
             }
-            catch (Exception ex) {
-                return BadRequest("There was an error with profile change"+ex.Message);
+            catch(Exception e)
+            {
+                return BadRequest(e.Message);
             }
 
         }
@@ -207,21 +142,7 @@ namespace CoolVolleyBallBookingSystem.Controllers
         {
             try
             {
-                // Get the current user
-                var user = await userManager.GetUserAsync(_httpContextAccessor.HttpContext.User);
-                if (user == null)
-                {
-                    return BadRequest("User not found");
-                }
-
-                // Remove the refresh token
-                await userManager.RemoveAuthenticationTokenAsync(
-                    user,
-                    IdentityConstants.BearerScheme,
-                    "RefreshToken"
-                );
-
-                return Ok(new { message = "Logged out successfully" });
+                return Ok(await _userService.logoutCurentUser());
             }
             catch (Exception ex)
             {
