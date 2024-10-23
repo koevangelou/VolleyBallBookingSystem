@@ -1,4 +1,5 @@
 ﻿using Azure.Core;
+using CoolVolleyBallBookingSystem.dto;
 using CoolVolleyBallBookingSystem.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -8,9 +9,9 @@ namespace CoolVolleyBallBookingSystem.Services
     public class UserService : IUserService
     {
         private UserManager<User> _userManager;
-        private HttpContextAccessor _httpContextAccessor;
+        private IHttpContextAccessor _httpContextAccessor;
 
-        public UserService(UserManager<User> userManager, HttpContextAccessor httpContextAccessor)
+        public UserService(UserManager<User> userManager, IHttpContextAccessor httpContextAccessor)
         {
             _userManager = userManager;
             _httpContextAccessor = httpContextAccessor;
@@ -56,12 +57,12 @@ namespace CoolVolleyBallBookingSystem.Services
                 else
                 {
                     // If it failed, return the errors
-                    return (result.Errors.ToString());
+                    throw new Exception (result.ToString());
                 }
             }
 
             // Return error if user is not found
-            return ($"User with email {email} not found");
+            throw new Exception ($"User with email {email} not found");
         }
         public async Task<string> RemoveUserRole(string email, string[] roles)
         {
@@ -97,14 +98,83 @@ namespace CoolVolleyBallBookingSystem.Services
             }
             await _userManager.DeleteAsync(user);
         }
-        public async Task DeleteUserById(string userId)
+        public async Task<IdentityResult> DeleteUserById(string userId)
         {
             User user = await _userManager.FindByIdAsync(userId);
             if (user == null)
             {
                 throw new Exception("User not found");
             }
-            await _userManager.DeleteAsync(user);
+            return await _userManager.DeleteAsync(user);
+        }
+
+        public async Task<string> ChangeCurrentProfile(ChangeProfileDto changeProfileDto)
+        {
+            User user = await _userManager.GetUserAsync(_httpContextAccessor.HttpContext.User);
+            if (changeProfileDto.phoneNumber != null)
+            {
+                user.PhoneNumber = changeProfileDto.phoneNumber;
+            }
+            if (changeProfileDto.userName != null)
+            {
+                user.UserName = changeProfileDto.userName;
+            }
+            if (changeProfileDto.email != null)
+            {
+                user.Email = changeProfileDto.email;
+            }
+            try
+            {
+                var result = await _userManager.UpdateAsync(user);
+                return ("Profile updated successfully");
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("There was an error with profile change" + ex.Message);
+            }
+        }
+
+        public async Task<string> logoutCurentUser()
+        {
+            // Get the current user
+            var user = await _userManager.GetUserAsync(_httpContextAccessor.HttpContext.User);
+            if (user == null)
+            {
+                throw new Exception("User not found");
+            }
+
+            // Remove the refresh token
+            await _userManager.RemoveAuthenticationTokenAsync(
+                user,
+                IdentityConstants.BearerScheme,
+                "RefreshToken"
+            );
+
+            return ( "Logged out successfully" );
+        }
+        public async Task<IdentityResult> UpdateUser(string id,User updatedUser)
+        {
+            if (id != updatedUser.Id)
+            {
+                throw new Exception("User ID mismatch");
+            }
+
+            var user = await _userManager.FindByIdAsync(id);
+            if (user == null)
+            {
+                throw new Exception ("User not found");
+            }
+
+
+            //user.Username = updatedUser.Username;
+            user.Email = updatedUser.Email;
+            user.PasswordHash = updatedUser.PasswordHash;
+            user.UpdatedAt = DateTime.UtcNow;
+
+            
+              return  await _userManager.UpdateAsync(user);
+            
+            
         }
     }
 }
