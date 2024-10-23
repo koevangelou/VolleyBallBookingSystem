@@ -92,5 +92,67 @@ namespace CoolVolleyBallBookingSystem.Services
 
             return booking;
         }
+        public async Task<Booking> UpdateBooking(int bookingId, string[] playerEmails, string currentUserId)
+        {
+            // Find the booking with the specified ID, including the related BookingPlayers
+            var booking = await _dbContext.Bookings
+                                          .Include(b => b.BookingPlayers)
+                                          .FirstOrDefaultAsync(b => b.BookingID == bookingId);
+
+            if (booking == null)
+            {
+                throw new Exception("Booking not found.");
+            }
+
+            // Check if the current user is the owner of the booking
+            if (booking.UserID != currentUserId)
+            {
+                throw new UnauthorizedAccessException("You are not authorized to update this booking.");
+            }
+
+            // Validate that exactly 3 players are being added
+            if (playerEmails.Length != 3)
+            {
+                throw new Exception("Please add exactly 3 players.");
+            }
+
+            // Clear the current players in the booking
+            booking.BookingPlayers.Clear();
+
+            var players = new List<BookingPlayer>();
+
+            foreach (var playerEmail in playerEmails)
+            {
+                var player = await _userManager.FindByEmailAsync(playerEmail);
+                if (player == null)
+                {
+                    throw new Exception($"Player with email {playerEmail} not found.");
+                }
+
+                // Ensure no duplicate players are being added
+                if (players.Any(p => p.UserId == player.Id))
+                {
+                    throw new Exception($"Player {playerEmail} is already part of the booking.");
+                }
+
+                players.Add(new BookingPlayer
+                {
+                    UserId = player.Id,
+                    Booking = booking,
+                    BookingId = booking.BookingID
+                });
+            }
+
+            // Add the new players to the booking
+            booking.BookingPlayers = players;
+
+            // Save changes to the database
+            _dbContext.Bookings.Update(booking);
+            await _dbContext.SaveChangesAsync();
+
+            return booking;
+        }
+
+
     }
 }

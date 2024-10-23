@@ -77,5 +77,28 @@ namespace CoolVolleyBallBookingSystem.Controllers
                       " from " + requestDto.StartTime + " to " + requestDto.StartTime.Add(TimeSpan.FromHours(1)) +
                       " in " + court.CourtName);
         }
+
+        [HttpPut("{bookingId}")]
+        public async Task<IActionResult> UpdateBookingPlayers(int bookingId, BookingRequestDto requestDto)
+        {
+            try
+            {
+                // Get the current authenticated user
+                var currentUserId = _userManager.GetUserId(User);
+
+                // Pass the currentUserId to the service method for authorization
+                var updatedBooking = await _bookingService.UpdateBooking(bookingId, requestDto.Players, currentUserId);
+                return Ok("Players updated successfully.");
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return Forbid("You are not authorized to update this booking.");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
     }
 }
