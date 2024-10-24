@@ -6,18 +6,15 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Identity;
 using CoolVolleyBallBookingSystem.Models;
 using CoolVolleyBallBookingSystem.Services;
-var builder = WebApplication.CreateBuilder(args);
+using CoolVolleyBallBookingSystem.Hubs; // Add this for SignalR
 
+var builder = WebApplication.CreateBuilder(args);
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(connectionString));
 
-
-
-
 // Add services to the container.
-
 
 builder.Services.AddControllers();
 builder.Services.AddHttpContextAccessor();
@@ -28,6 +25,8 @@ builder.Services.AddAuthorizationBuilder();
 builder.Services.AddIdentityCore<User>().AddRoles<IdentityRole>().AddEntityFrameworkStores<AppDbContext>().AddApiEndpoints();
 builder.Services.AddScoped<BookingService>();
 builder.Services.AddScoped<IUserService, UserService>();
+
+builder.Services.AddSignalR(); // Add SignalR services here
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -45,9 +44,9 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
 app.UseAuthorization();
 
 app.MapControllers();
+app.MapHub<BookingHub>("/bookingHub"); // Map the SignalR hub route
 
 app.Run();

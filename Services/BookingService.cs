@@ -1,7 +1,9 @@
 ﻿using CoolVolleyBallBookingSystem.Data;
 using CoolVolleyBallBookingSystem.dto;
+using CoolVolleyBallBookingSystem.Hubs;
 using CoolVolleyBallBookingSystem.Models;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 
 namespace CoolVolleyBallBookingSystem.Services
@@ -11,12 +13,14 @@ namespace CoolVolleyBallBookingSystem.Services
         private readonly AppDbContext _dbContext;
         private readonly UserManager<User> _userManager;
         private readonly IUserService _userService;
+        private readonly IHubContext<BookingHub> _hubContext;
 
-        public BookingService(AppDbContext dbContext, UserManager<User> userManager,IUserService userService)
+        public BookingService(AppDbContext dbContext, UserManager<User> userManager,IUserService userService, IHubContext<BookingHub> hubContext)
         {
             _dbContext = dbContext;
             _userManager = userManager;
             _userService = userService;
+            _hubContext = hubContext;
         }
 
         // Method to check for booking conflicts
@@ -91,6 +95,7 @@ namespace CoolVolleyBallBookingSystem.Services
             booking.Status = "Completed"; // Mark the booking as completed
             await _dbContext.Bookings.AddAsync(booking);
             await _dbContext.SaveChangesAsync();
+            await _hubContext.Clients.All.SendAsync("ReceiveBookingNotification", $"Booking {booking.BookingID} is completed.");
 
             return booking;
         }
