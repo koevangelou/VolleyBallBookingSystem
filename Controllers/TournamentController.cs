@@ -16,12 +16,14 @@ namespace CoolVolleyBallBookingSystem.Controllers
     public class TournamentController : ControllerBase
     {
         private readonly AppDbContext _dbContext;
-        private readonly UserManager<User> _userManager;
+        
+        private readonly IUserService _userService;
 
-        public TournamentController(AppDbContext dbContext, UserManager<User> userManager)
+        public TournamentController(AppDbContext dbContext,  IUserService userService)
         {
             _dbContext = dbContext;
-            _userManager = userManager;
+            
+            _userService = userService;
         }
 
         // Method: Create a new Tournament 
@@ -30,7 +32,7 @@ namespace CoolVolleyBallBookingSystem.Controllers
         public async Task<IActionResult> CreateTournament([FromBody] TournamentDto tournamentDto)
         {
             // Ensure the Organizer exists
-            var organizer = await _userManager.FindByIdAsync(tournamentDto.OrganizerID);
+            var organizer = await _userService.GetUserById(tournamentDto.OrganizerID);
             if (organizer == null)
             {
                 return BadRequest("Coachnot found.");
