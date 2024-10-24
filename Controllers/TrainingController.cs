@@ -16,13 +16,13 @@ namespace CoolVolleyBallBookingSystem.Controllers
     public class TrainingController : ControllerBase
     {
         private readonly AppDbContext _dbContext;
-        private readonly UserManager<User> _userManager;
+        private readonly IUserService _userService;
         private readonly BookingService _bookingService;
 
-        public TrainingController(AppDbContext dbContext, UserManager<User> userManager, BookingService bookingService)
+        public TrainingController(AppDbContext dbContext, IUserService userService, BookingService bookingService)
         {
             _dbContext = dbContext;
-            _userManager = userManager;
+            _userService = userService;
             _bookingService = bookingService;
         }
 
@@ -39,7 +39,7 @@ namespace CoolVolleyBallBookingSystem.Controllers
             }
 
             // Ensure the User exists
-            var user = await _userManager.FindByIdAsync(assignTrainingDto.UserId);
+            var user = await _userService.GetUserById(assignTrainingDto.UserId);
             if (user == null)
             {
                 return NotFound("User not found.");
