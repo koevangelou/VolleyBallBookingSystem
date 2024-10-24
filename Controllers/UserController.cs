@@ -17,15 +17,15 @@ namespace CoolVolleyBallBookingSystem.Controllers
     {
 
         private readonly AppDbContext _dbContext;
-        private readonly UserManager<User> userManager;
-        private readonly IHttpContextAccessor _httpContextAccessor;
+        
+        
         private readonly IUserService _userService;
 
-        public UserController(AppDbContext dbContext, UserManager<User> userManager, IHttpContextAccessor httpContextAccessor,IUserService userService)
+        public UserController(AppDbContext dbContext,IUserService userService)
         {
             _dbContext = dbContext;
-            this.userManager = userManager;
-            _httpContextAccessor = httpContextAccessor;
+            
+            
             _userService = userService;
 
         }
