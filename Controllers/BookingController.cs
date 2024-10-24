@@ -16,10 +16,13 @@ namespace CoolVolleyBallBookingSystem.Controllers
         private readonly AppDbContext _dbContext;
         private readonly UserManager<User> _userManager;
         private readonly BookingService _bookingService;
-        public BookingController(AppDbContext dbContext,UserManager<User> userManager, BookingService bookingService) {
+        private readonly IUserService _userService;
+
+        public BookingController(AppDbContext dbContext,UserManager<User> userManager, BookingService bookingService, IUserService userService) {
             _dbContext = dbContext;
             _userManager = userManager;
             _bookingService = bookingService;
+            _userService = userService;
         }
 
         [HttpGet]
@@ -84,7 +87,7 @@ namespace CoolVolleyBallBookingSystem.Controllers
             try
             {
                 // Get the current authenticated user
-                var currentUserId = _userManager.GetUserId(User);
+                var currentUserId = (await _userService.GetCurrentUser()).Id;
 
                 // Pass the currentUserId to the service method for authorization
                 var updatedBooking = await _bookingService.UpdateBooking(bookingId, requestDto.Players, currentUserId);

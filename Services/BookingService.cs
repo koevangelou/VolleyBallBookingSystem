@@ -10,11 +10,13 @@ namespace CoolVolleyBallBookingSystem.Services
     {
         private readonly AppDbContext _dbContext;
         private readonly UserManager<User> _userManager;
+        private readonly IUserService _userService;
 
-        public BookingService(AppDbContext dbContext, UserManager<User> userManager)
+        public BookingService(AppDbContext dbContext, UserManager<User> userManager,IUserService userService)
         {
             _dbContext = dbContext;
             _userManager = userManager;
+            _userService = userService;
         }
 
         // Method to check for booking conflicts
@@ -105,10 +107,11 @@ namespace CoolVolleyBallBookingSystem.Services
             }
 
             // Check if the current user is the owner of the booking
-            if (booking.UserID != currentUserId)
+            if (booking.UserID != currentUserId && !await _userManager.IsInRoleAsync(await _userService.GetCurrentUser(), "Admin"))
             {
                 throw new UnauthorizedAccessException("You are not authorized to update this booking.");
             }
+
 
             // Validate that exactly 3 players are being added
             if (playerEmails.Length != 3)
