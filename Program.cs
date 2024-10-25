@@ -6,7 +6,8 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Identity;
 using CoolVolleyBallBookingSystem.Models;
 using CoolVolleyBallBookingSystem.Services;
-using CoolVolleyBallBookingSystem.Hubs; // Add this for SignalR
+using CoolVolleyBallBookingSystem.Hubs;
+using CoolVolleyBallBookingSystem.Middleware; // Add this for SignalR
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -43,10 +44,14 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseMiddleware<PostRegistrationMiddleware>();
 app.UseHttpsRedirection();
 app.UseAuthorization();
 
+
+
 app.MapControllers();
 app.MapHub<BookingHub>("/bookingHub"); // Map the SignalR hub route
+
 
 app.Run();

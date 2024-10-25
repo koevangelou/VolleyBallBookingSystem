@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.SignalR;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.SignalR;
 using System.Threading.Tasks;
 
 namespace CoolVolleyBallBookingSystem.Hubs
@@ -10,5 +11,20 @@ namespace CoolVolleyBallBookingSystem.Hubs
             // Broadcast a message to all connected clients
             await Clients.All.SendAsync("ReceiveBookingNotification", message);
         }
+
+
+       // [Authorize(Roles ="Admin")]
+        public async Task JoinAdminGroup()
+        {
+           
+            await Groups.AddToGroupAsync(Context.ConnectionId, "Admins");
+        }
+
+        // Add this method to send notifications specifically to admins
+        public async Task SendAdminNotification(string message)
+        {
+            await Clients.Group("Admins").SendAsync("ReceiveAdminNotification", message);
+        }
+
     }
 }
