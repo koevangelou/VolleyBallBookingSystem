@@ -18,6 +18,7 @@ namespace CoolVolleyBallBookingSystem.Services
         Task<string> ChangeCurrentProfile(ChangeProfileDto changeProfileDto);
         Task<string> logoutCurentUser();
 
+        Task<User> GetUserByEmail(string email);
         Task<IdentityResult> UpdateUser(string id, User updatedUser);
     }
 }

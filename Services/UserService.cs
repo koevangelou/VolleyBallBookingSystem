@@ -176,5 +176,9 @@ namespace CoolVolleyBallBookingSystem.Services
             
             
         }
+        public async Task<User> GetUserByEmail(string email)
+        {
+            return await _userManager.FindByEmailAsync(email);
+        }
     }
 }

@@ -69,7 +69,7 @@ namespace CoolVolleyBallBookingSystem.Services
             // Add other players from the request
             foreach (var playerMail in requestDto.Players)
             {
-                var player = await _userManager.FindByEmailAsync(playerMail);
+                var player = await _userService.GetUserByEmail(playerMail);
                 if (player == null)
                 {
                     throw new Exception($"Player with mail {playerMail} not found.");
@@ -131,7 +131,7 @@ namespace CoolVolleyBallBookingSystem.Services
 
             foreach (var playerEmail in playerEmails)
             {
-                var player = await _userManager.FindByEmailAsync(playerEmail);
+                var player = await _userService.GetUserByEmail(playerEmail);
                 if (player == null)
                 {
                     throw new Exception($"Player with email {playerEmail} not found.");
