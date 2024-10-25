@@ -11,14 +11,14 @@ namespace CoolVolleyBallBookingSystem.Services
     public class BookingService
     {
         private readonly AppDbContext _dbContext;
-        private readonly UserManager<User> _userManager;
+        
         private readonly IUserService _userService;
         private readonly IHubContext<BookingHub> _hubContext;
 
-        public BookingService(AppDbContext dbContext, UserManager<User> userManager,IUserService userService, IHubContext<BookingHub> hubContext)
+        public BookingService(AppDbContext dbContext,IUserService userService, IHubContext<BookingHub> hubContext)
         {
             _dbContext = dbContext;
-            _userManager = userManager;
+            
             _userService = userService;
             _hubContext = hubContext;
         }
@@ -112,7 +112,7 @@ namespace CoolVolleyBallBookingSystem.Services
             }
 
             // Check if the current user is the owner of the booking
-            if (booking.UserID != currentUserId && !await _userManager.IsInRoleAsync(await _userService.GetCurrentUser(), "Admin"))
+            if (booking.UserID != currentUserId && !await _userService.IsInRole(await _userService.GetCurrentUser(), "Admin"))
             {
                 throw new UnauthorizedAccessException("You are not authorized to update this booking.");
             }

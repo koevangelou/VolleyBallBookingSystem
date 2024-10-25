@@ -20,5 +20,7 @@ namespace CoolVolleyBallBookingSystem.Services
 
         Task<User> GetUserByEmail(string email);
         Task<IdentityResult> UpdateUser(string id, User updatedUser);
+
+        Task<bool> IsInRole(User user, string role);
     }
 }

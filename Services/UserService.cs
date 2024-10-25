@@ -180,5 +180,9 @@ namespace CoolVolleyBallBookingSystem.Services
         {
             return await _userManager.FindByEmailAsync(email);
         }
+        public async Task<bool> IsInRole(User user,string role)
+        {
+            return await _userManager.IsInRoleAsync(user, role);
+        }
     }
 }
