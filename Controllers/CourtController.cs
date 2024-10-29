@@ -94,6 +94,9 @@ namespace CoolVolleyBallBookingSystem.Controllers
             try
             {
                 await _dbContext.SaveChangesAsync();
+
+                // Send a notification about the court update
+                await _courtHubContext.Clients.All.SendAsync("ReceiveCourtUpdatedNotification", $"Court '{court.CourtName}' updated successfully.");
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -109,6 +112,7 @@ namespace CoolVolleyBallBookingSystem.Controllers
 
             return NoContent();
         }
+
 
         // Code to delete a court - Admin only
         [Authorize(Roles = "Admin")]
