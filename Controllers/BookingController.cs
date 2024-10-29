@@ -103,5 +103,27 @@ namespace CoolVolleyBallBookingSystem.Controllers
             }
         }
 
+        [HttpDelete("{bookingId}")]
+        public async Task<IActionResult> DeleteBookingPlayers(int bookingId)
+        {
+            try
+            {
+                // Get the current authenticated user
+                var currentUserId = (await _userService.GetCurrentUser()).Id;
+
+                // Pass the currentUserId to the service method for authorization
+                var deletedBooking = await _bookingService.DeleteBooking(bookingId, currentUserId);
+                return Ok("Booking deleted successfully.");
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return Forbid("You are not authorized to delete this booking.");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
     }
 }
