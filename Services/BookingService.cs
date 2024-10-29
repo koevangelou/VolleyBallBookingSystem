@@ -162,5 +162,32 @@ namespace CoolVolleyBallBookingSystem.Services
         }
 
 
+        public async Task<Booking> DeleteBooking(int bookingId, string currentUserId)
+        {
+            // Find the booking with the specified ID, including the related BookingPlayers
+            var booking = await _dbContext.Bookings
+                                          .Include(b => b.BookingPlayers)
+                                          .FirstOrDefaultAsync(b => b.BookingID == bookingId);
+
+            if (booking == null)
+            {
+                throw new Exception("Booking not found.");
+            }
+
+            // Check if the current user is the owner of the booking
+            if (booking.UserID != currentUserId && !await _userService.IsInRole(await _userService.GetCurrentUser(), "Admin"))
+            {
+                throw new UnauthorizedAccessException("You are not authorized to delete this booking.");
+            }
+
+            // Save changes to the database
+            _dbContext.Bookings.Remove(booking);
+            await _dbContext.SaveChangesAsync();
+
+            // Return a 204 No Content status
+            return booking;
+        }
+
+
     }
 }
