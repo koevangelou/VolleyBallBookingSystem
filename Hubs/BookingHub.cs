@@ -26,5 +26,25 @@ namespace CoolVolleyBallBookingSystem.Hubs
             await Clients.Group("Admins").SendAsync("ReceiveAdminNotification", message);
         }
 
+
+        public async Task JoinBookingGroup(string bookingId)
+        {
+            
+            await Groups.AddToGroupAsync(Context.ConnectionId, bookingId);
+        }
+
+        public async Task LeaveBookingGroup(string bookingId)
+        {
+            
+            await Groups.RemoveFromGroupAsync(Context.ConnectionId, bookingId);
+        }
+
+        
+        public async Task SendBookingNotification(string bookingId, string message)
+        {
+            await Clients.Group(bookingId).SendAsync("ReceiveBookingNotification", message);
+        }
+
+
     }
 }
