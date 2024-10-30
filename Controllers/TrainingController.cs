@@ -1,9 +1,11 @@
 ﻿using CoolVolleyBallBookingSystem.Data;
 using CoolVolleyBallBookingSystem.Models;
 using CoolVolleyBallBookingSystem.Services;
+using CoolVolleyBallBookingSystem.Hubs; // Import TrainingHub
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR; // Import SignalR context
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -18,12 +20,14 @@ namespace CoolVolleyBallBookingSystem.Controllers
         private readonly AppDbContext _dbContext;
         private readonly IUserService _userService;
         private readonly BookingService _bookingService;
+        private readonly IHubContext<TrainingHub> _trainingHubContext; // Hub context for notifications
 
-        public TrainingController(AppDbContext dbContext, IUserService userService, BookingService bookingService)
+        public TrainingController(AppDbContext dbContext, IUserService userService, BookingService bookingService, IHubContext<TrainingHub> trainingHubContext)
         {
             _dbContext = dbContext;
             _userService = userService;
             _bookingService = bookingService;
+            _trainingHubContext = trainingHubContext;
         }
 
         // Method to assign a user to training on a specific court (accessible to Coaches only)
@@ -84,6 +88,9 @@ namespace CoolVolleyBallBookingSystem.Controllers
             // Save the booking to the database
             await _dbContext.Bookings.AddAsync(booking);
             await _dbContext.SaveChangesAsync();
+
+            // Send notification to all clients about the new training assignment
+            await _trainingHubContext.Clients.All.SendAsync("ReceiveTrainingCreatedNotification", $"Training for {user.UserName} on court {court.CourtName} has been created.");
 
             // Return success response
             return Ok($"User {user.UserName} has been successfully assigned to training on court {court.CourtName}.");

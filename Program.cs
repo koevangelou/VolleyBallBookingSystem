@@ -53,6 +53,7 @@ app.UseAuthorization();
 app.MapControllers();
 app.MapHub<BookingHub>("/bookingHub"); // Map the SignalR hub route
 app.MapHub<CourtHub>("/courtHub"); // Map the SignalR hub route
+app.MapHub<TrainingHub>("/trainingHub"); // Map the SignalR hub route
 
 
 app.Run();
