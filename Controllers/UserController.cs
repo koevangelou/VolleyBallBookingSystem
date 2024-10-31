@@ -16,14 +16,14 @@ namespace CoolVolleyBallBookingSystem.Controllers
     public class UserController : Controller
     {
 
-        private readonly AppDbContext _dbContext;
+        
         
         
         private readonly IUserService _userService;
 
-        public UserController(AppDbContext dbContext,IUserService userService)
+        public UserController(IUserService userService)
         {
-            _dbContext = dbContext;
+            
             
             
             _userService = userService;
@@ -35,7 +35,7 @@ namespace CoolVolleyBallBookingSystem.Controllers
         [Route("GetAllUserProfiles")]
         public async Task<ActionResult<IEnumerable<User>>> GetAllUsers()
         {
-            return await _dbContext.Users.ToListAsync();
+            return await _userService.GetAllUsers();
 
         }
         [HttpGet]
