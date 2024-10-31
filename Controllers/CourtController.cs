@@ -19,11 +19,17 @@ namespace CoolVolleyBallBookingSystem.Controllers
     {
         private readonly AppDbContext _dbContext;
         private readonly IHubContext<CourtHub> _courtHubContext;
+        private IHubContext<CourtHub> @object;
 
         public CourtController(AppDbContext dbContext, IHubContext<CourtHub> courtHubContext)
         {
             _dbContext = dbContext;
             _courtHubContext = courtHubContext;
+        }
+
+        public CourtController(IHubContext<CourtHub> @object)
+        {
+            this.@object = @object;
         }
 
         // Get a court by ID
