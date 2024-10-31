@@ -45,6 +45,11 @@ namespace CoolVolleyBallBookingSystem.Hubs
             await Clients.Group(bookingId).SendAsync("ReceiveBookingNotification", message);
         }
 
+        public async Task SendTournamentCreatedNotification(string message)
+        {
+            await Clients.All.SendAsync("ReceiveTournamentCreatedNotification", message);
+        }
+
 
     }
 }

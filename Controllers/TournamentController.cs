@@ -1,9 +1,11 @@
 ﻿using CoolVolleyBallBookingSystem.Data;
+using CoolVolleyBallBookingSystem.Hubs;
 using CoolVolleyBallBookingSystem.Models;
 using CoolVolleyBallBookingSystem.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -18,11 +20,12 @@ namespace CoolVolleyBallBookingSystem.Controllers
         private readonly AppDbContext _dbContext;
         
         private readonly IUserService _userService;
+        private readonly IHubContext<BookingHub> _bookingHubContext;
 
-        public TournamentController(AppDbContext dbContext,  IUserService userService)
+        public TournamentController(AppDbContext dbContext,  IUserService userService,IHubContext<BookingHub> bookingHubContext)
         {
             _dbContext = dbContext;
-            
+            _bookingHubContext = bookingHubContext;
             _userService = userService;
         }
 
@@ -55,7 +58,7 @@ namespace CoolVolleyBallBookingSystem.Controllers
             // Save the tournament to the database
             await _dbContext.Tournaments.AddAsync(tournament);
             await _dbContext.SaveChangesAsync();
-
+            await _bookingHubContext.Clients.All.SendAsync("ReceiveTournamentCreatedNotification", $"tournament with id {tournament.TournamentID} succesfully created");
             return Ok($"Tournament '{tournament.TournamentName}' has been successfully created.");
         }
 
